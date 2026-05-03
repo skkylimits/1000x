@@ -1,0 +1,52 @@
+{
+	"name": "1000x",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare && simple-git-hooks",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"typecheck": "nuxt typecheck"
+	},
+	"dependencies": {
+		"@nuxt/content": "^3.13.0",
+		"@nuxt/icon": "^2.2.1",
+		"@nuxt/ui": "^4.7.1",
+		"@nuxtjs/i18n": "^10.3.0",
+		"@vite-pwa/nuxt": "^1.1.1",
+		"better-sqlite3": "^12.9.0",
+		"nuxt": "^4.4.4",
+		"tailwindcss": "^4.2.4",
+		"vue": "^3.5.33",
+		"vue-router": "^5.0.6"
+	},
+	"devDependencies": {
+		"@antfu/eslint-config": "^8.2.0",
+		"@iconify-json/lucide": "^1.2.105",
+		"@iconify-json/simple-icons": "^1.2.80",
+		"@iconify-json/tabler": "^1.2.33",
+		"@nuxt/eslint": "^1.15.2",
+		"eslint": "^10.3.0",
+		"lint-staged": "^16.4.0",
+		"simple-git-hooks": "^2.13.1"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"better-sqlite3",
+			"@parcel/watcher",
+			"esbuild",
+			"simple-git-hooks",
+			"vue-demi"
+		]
+	},
+	"simple-git-hooks": {
+		"pre-commit": "pnpm lint-staged"
+	},
+	"lint-staged": {
+		"*.{js,ts,vue,jsx,tsx,json,jsonc,yml,yaml}": "eslint --fix"
+	}
+}
