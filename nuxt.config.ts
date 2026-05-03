@@ -14,6 +14,12 @@ export default defineNuxtConfig({
 
 	css: ['~/assets/css/main.css'],
 
+	// Auto-import components without folder-prefix so <AppHeader />, <PageActionBar />
+	// resolve regardless of whether they live in app/components/layout/ or /page/.
+	components: [
+		{ path: '~/components', pathPrefix: false },
+	],
+
 	// i18n — NL default, EN secundair
 	i18n: {
 		defaultLocale: 'nl',
