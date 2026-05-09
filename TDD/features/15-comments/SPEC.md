@@ -1,5 +1,25 @@
 # Comment-systeem
 
-> Detailed spec for feature 15. See `TDD/FEATURES.md` for the overview.
+## Summary
 
-(Content to be filled in when this feature is being designed in depth.)
+YouTube-stijl comments met threaded replies, likes en sortering op _Top_ of _Newest_, beschikbaar als panel-optie (zie Rechter panel met conditionele panel-switcher en smart ToC, feature 5). Bedoeld voor vragen, feedback en stemmen op verbetersuggesties via de like-functie.
+
+## Goals
+
+- Lezers kunnen op iedere pagina-context vragen en feedback achterlaten
+- Threaded replies en likes zijn duidelijk zichtbaar zodat populaire feedback bovenaan komt
+- Eerste release levert de frontend-component zodat backend-keuze later gemaakt kan worden zonder UI-werk
+- Moderation komt pas in beeld zodra een breder publiek toegang krijgt
+
+## Requirements
+
+- Comments zijn beschikbaar als panel-optie in de panel-switcher op iedere pagina
+- Het comments-panel toont sorteer-tabs bovenaan met de keuzes _Top_ en _Newest_
+- Onder de sorteer-tabs verschijnt een lijst van comment-items met avatar, naam, tijd, body, like-knop en _reply_-affordance
+- Replies zijn ingesprongen onder hun parent (threaded)
+- Likes vormen het stem-mechanisme voor _Top_-sortering
+- Eerste release: read-only stub of mock-data; schrijven is mogelijk pas zodra een identity-laag beschikbaar is
+- De backend-keuze (eigen backend, externe service, etc.) wordt later gemaakt; de frontend-component is daarvoor agnostisch
+- Moderation-functionaliteit (verwijderen, rapporteren, markeren) is in de huidige scope niet vereist en komt pas zodra de gebruikersgroep daarom vraagt
+- Iedere comment-actie en sorteer-tab is toetsenbord-bedienbaar (WCAG 2.1 AA)
+- Op mobiel werkt het panel volgens de mobiele layout (zie Mobiele layout, feature 16)
