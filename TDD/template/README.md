@@ -11,9 +11,9 @@ De Nuxt UI docs-template levert al veel uit de doos: markdown rendering, code bl
 Het verschil:
 
 - **Een feature** (`features/`) — iets bouwen dat er nog niet is. Code-editor, card-trainer, AI-assistent
-- **Een customization** (deze folder) — iets aanpassen dat er al is. De auto-sidebar van de template vervangen door een scope-bound versie, hun layout-chrome aanpassen, hun search uitbreiden met een scope-filter
+- **Een customization** (deze folder) — iets aanpassen dat er al is. De auto-sidebar vervangen door een scope-bound versie, de header en sub-header van de template vervangen, hun search uitbreiden met een scope-filter
 
-Een customization verwijst meestal naar een feature-spec voor de _inhoudelijke_ eisen ("wat moet de scope-bound sidebar doen?"). De customization-doc beschrijft het werk om de template-versie te vervangen door wat de feature-spec voorschrijft. Twee documenten, één voor de wat-vraag, één voor de hoe-vraag.
+Een customization spec extraheert de inhoudelijke eisen uit de gerelateerde feature-spec(s) maar focust op het stuk dat de template-versie raakt. Overlap met de feature-spec is by design: de feature-spec is bron-van-waarheid voor "wat moet het uiteindelijk doen", de customization-spec is een gefocuste her-uitsnede voor het vervangings-werk op de template.
 
 ---
 
@@ -44,7 +44,7 @@ Geordend op afhankelijkheden — wat eerst moet staan voordat het volgende zinvo
 
 **01-branding optioneel:**
 
-Foundation heeft de basis-branding al gedaan (rood, 1000x-logo, site-naam). `01-branding.md` is voor latere fijn-tuning — exacte red-shade kiezen, OG image maken, favicon-set genereren. Niet kritisch voor de andere customizations.
+Foundation heeft de basis-branding al gedaan (rood, 1000x-logo, site-naam). `01-branding/SPEC.md` is voor latere fijn-tuning — exacte red-shade kiezen, OG image maken, favicon-set genereren. Niet kritisch voor de andere customizations.
 
 ---
 
@@ -63,15 +63,13 @@ In twijfelgeval: kijk in de template hoe het er nu uitziet. Bestaat het al en mo
 
 ## Format per customization-doc
 
-Elk customization-doc heeft deze secties:
+Elke customization heeft één SPEC.md in zijn eigen folder, met identiek format als feature-specs (`features/<n>/SPEC.md`):
 
-- **Wat verandert** — welke template-files of components ik aanraak
-- **Waarom** — link naar de feature-spec(s) die de eisen bevat
-- **Aanpak** — vervangen of uitbreiden, en het hoe
-- **Tests** — wat er moet werken na de customization
-- **Open punten** — onzekerheden die tijdens implementatie opgelost moeten worden
+- **Summary** — 1–3 zinnen: wat verandert er, welke template-versie wordt vervangen of uitgebreid, voor wie
+- **Goals** — concrete outcomes die deze customization moet bereiken (3–6 bullets)
+- **Requirements** — functionele eisen, doorgaans pulled uit de gerelateerde feature-spec(s) en gefocust op het stuk dat de template-versie raakt
 
-Skelets bevatten de structuur en de links; de "Aanpak" en "Open punten" worden tijdens implementatie ingevuld zodra de template-codebase is geïnspecteerd.
+Geen design, geen library- of file-keuzes, geen UI-positionering tot op de pixel. Het "hoe" leeft in de PR zelf — de spec beschrijft alleen het _wat_ en het _waarom_.
 
 ---
 
@@ -79,13 +77,12 @@ Skelets bevatten de structuur en de links; de "Aanpak" en "Open punten" worden t
 
 Per customization:
 
-1. **Lees de gerelateerde feature-spec(s)** in `features/` voor de inhoudelijke eisen
+1. **Lees de SPEC.md** in `template/<n>/` plus de gerelateerde feature-spec(s) in `features/`
 2. **Open de template-code** lokaal en kijk hoe het nu werkt
-3. **Vul het customization-doc verder in** — Aanpak en Open punten vooral
-4. **Maak een branch**: `customization/02-sidebar`, `customization/03-layout-chrome` etc.
-5. **Schrijf tests vóór implementatie** — TDD-stijl, zoals we voor features doen
-6. **Implementatie**, lokale verificatie, PR met scope helder afgebakend
-7. **Merge** en pas door naar volgende customization
+3. **Maak een branch**: `customization/02-sidebar`, `customization/03-header`, `customization/04-variant-tabs` etc.
+4. **Schrijf tests vóór implementatie** — TDD-stijl, zoals we voor features doen
+5. **Implementatie**, lokale verificatie, PR met scope helder afgebakend
+6. **Merge** en pas door naar volgende customization
 
 Eén PR = één customization. Niet bundelen — anders wordt review onmogelijk en rollback ook.
 
@@ -95,6 +92,6 @@ Eén PR = één customization. Niet bundelen — anders wordt review onmogelijk 
 
 - **Foundation-werk** (branding setup, i18n config, dependencies, content-schema). Hoort in `SCAFFOLDING.md`
 - **Nieuwe features** die de template niet levert (code-editor, card-trainer, AI-assistent, image-lightbox, etc.). Hoort in `features/`
-- **Spec-wijzigingen**. Als de inhoudelijke eis verandert, pas `spec.md` of `features/<feature>/spec.md` aan
+- **Spec-wijzigingen**. Als de inhoudelijke eis verandert, pas `TDD/SPEC.md` of `TDD/features/<feature>/SPEC.md` aan
 
 Als je twijfelt: post de vraag in de discussie-chat voordat je een customization-doc schrijft. Sneller dan achteraf splitsen.
