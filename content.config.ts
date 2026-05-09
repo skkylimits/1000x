@@ -1,28 +1,12 @@
-import { defineCollection, defineContentConfig, z } from '@nuxt/content'
+import { defineCollection, defineContentConfig } from '@nuxt/content'
+import { contentSchema } from './content.schema'
 
 export default defineContentConfig({
 	collections: {
 		content: defineCollection({
 			type: 'page',
 			source: '**/*.md',
-			schema: z.object({
-				title: z.string(),
-				description: z.string().optional(),
-				icon: z.string().optional(),
-				// Sidebar scope: feature 19
-				scope: z.enum(['self', 'children']).optional(),
-				// Didactische volgorde voor hoofdstukken: feature 19
-				nav: z.array(z.string()).optional(),
-				order: z.number().optional(),
-				// Variant-tabs: feature 8
-				variants: z.array(z.object({
-					id: z.string(),
-					label: z.string(),
-					icon: z.string(),
-				})).optional(),
-				// Forward compat: feature 1
-				schemaVersion: z.number().default(1),
-			}),
+			schema: contentSchema,
 		}),
 	},
 })
