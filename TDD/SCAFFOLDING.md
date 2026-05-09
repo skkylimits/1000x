@@ -1,6 +1,20 @@
-# 1000x — Scaffolding instructie
+# 1000x — Scaffolding (template-aanpak)
 
-> Copy-paste setup voor het bare 1000x-project. Volg de stappen in volgorde; elke stap is zelfstandig en idempotent. Aan het eind heb je een Nuxt 4 + Nuxt UI v4 + Nuxt Content v3 project met i18n, ESLint, en de eerste markdown-pagina rendert.
+> Setup-instructies om vanaf nul tot een gebrand, draaiend 1000x-project te komen op basis van de **Nuxt UI docs-template**. Aan het eind van dit document heb je een werkende site met 1000x-branding, NL/EN i18n, het uitgebreide content-schema, en een eerste eigen pagina. Geen scope-bound sidebar, geen variant-tabs, geen layout-chrome — die komen in de _customizations_-fase, zie `template/`.
+
+> **Niet vergeten**: dit is een fundamentele wijziging ten opzichte van de oorspronkelijke scratch-aanpak. Die blijft beschikbaar als referentie in `archief/`, maar wordt niet meer gevolgd.
+
+---
+
+## Filosofie
+
+De Nuxt UI docs-template levert al een hoop dat in onze spec staat — markdown rendering, code blocks, prose components, search, dark mode, auto-sidebar, AI MCP-integratie. Vanaf nul beginnen is herontdekken wat zij hebben opgelost. Wij gebruiken hun werk als baseline en focus al onze energie op wat 1000x echt onderscheidend maakt.
+
+Drie soorten werk staan naast elkaar in dit project, en het is belangrijk dat je weet wat waar hoort:
+
+1. **Foundation** — dit document. Eénmalig, branding, i18n, schema, AI-context. Niet feature-bound.
+2. **Template customizations** — in `template/`. Aanpassingen waar de template iets anders doet dan onze spec voorschrijft (bv. sidebar, layout-chrome, search).
+3. **Eigen features** — in `features/`. Onze 21 features die niet uit de template komen (code-editor, card-trainer, AI-assistent, etc.).
 
 ---
 
@@ -8,201 +22,316 @@
 
 Heb je nodig:
 
-- **Node.js 22.5+** — Nuxt Content v3 gebruikt SQLite; 22.5+ kan native zonder `better-sqlite3`. Anders is `better-sqlite3` als runtime-dep nodig.
-- **pnpm** — aanbevolen (sneller, betere monorepo-support). v10+ heeft een approval-stap voor build-scripts; daar lossen we onderaan voor op.
-- **Git** — voor de hooks via `simple-git-hooks`.
+- **Node.js 22.5+** — Nuxt Content v3 gebruikt SQLite; 22.5+ kan native zonder `better-sqlite3`
+- **pnpm 10+** — aanbevolen door de template
+- **Git** — voor versie-beheer
+- **GitHub CLI (`gh`)** — voor auth zonder tokens te hoeven beheren
 
 ```bash
 node --version    # >= 22.5
-pnpm --version    # >= 9
+pnpm --version    # >= 10
 git --version
+gh --version
 ```
 
----
+Mis je iets? Installeer eerst voor je verder gaat. Voor WSL: `sudo apt install gh`, daarna `gh auth login`.
 
-## 1. Init project
+## 1. Template clonen
 
 ```bash
-pnpm create nuxt@latest 1000x
+cd ~/HELL                                                    # of waar je projecten leven
+git clone https://github.com/nuxt-ui-templates/docs.git 1000x
 cd 1000x
+rm -rf .git                                                  # template's git-history weg
+git init -b main                                             # eigen history beginnen
 ```
 
-In de prompt:
-- **Package manager**: pnpm
-- **Initialize git**: ja
-- **Modules**: skip allemaal (we voegen ze handmatig toe — meer controle, geen onverwachte defaults)
-- **Official starter**: nee, basic project
-
-Resultaat: bare Nuxt 4 project met `app/`, `nuxt.config.ts`, `package.json`, etc.
-
----
-
-## 2. Dependencies installeren
-
-**Runtime modules:**
-
-```bash
-pnpm add @nuxt/content @nuxt/ui @nuxt/icon @nuxtjs/i18n @vite-pwa/nuxt tailwindcss better-sqlite3
-```
-
-**Dev tooling:**
-
-```bash
-pnpm add -D @nuxt/eslint @antfu/eslint-config eslint simple-git-hooks lint-staged @iconify-json/lucide @iconify-json/tabler @iconify-json/simple-icons
-```
-
-**Pnpm v10+ build-script approval** (anders crasht `better-sqlite3` postinstall):
-
-Voeg toe aan `package.json` op top-level:
-
-```json
-"pnpm": {
-  "onlyBuiltDependencies": [
-    "better-sqlite3",
-    "@parcel/watcher",
-    "esbuild",
-    "simple-git-hooks",
-    "vue-demi"
-  ]
-}
-```
-
-Daarna:
+Dit is je vertrekpunt. Vanaf nu is dit `1000x`, niet meer een fork van de template.
 
 ```bash
 pnpm install
+pnpm dev
 ```
+
+Open `localhost:3000`. Je ziet de Nuxt UI demo-docs draaien. Klik even rond, zodat je weet wat de template kan voordat je gaat tweaken.
 
 ---
 
-## 3. Configuratie-files
+## 2. Branding
 
-### `nuxt.config.ts`
+De eerste customization: maak het van Nuxt UI naar 1000x.
 
-Vervang het bestaande met:
+### `app.config.ts`
+
+Zet primary op rood:
 
 ```ts
-// https://nuxt.com/docs/api/configuration/nuxt-config
-export default defineNuxtConfig({
-	compatibilityDate: '2026-05-03',
-	devtools: { enabled: true },
-
-	modules: [
-		'@nuxt/eslint',
-		'@nuxt/content',
-		'@nuxt/ui',
-		'@nuxt/icon',
-		'@nuxtjs/i18n',
-		'@vite-pwa/nuxt',
-	],
-
-	css: ['~/assets/css/main.css'],
-
-	// i18n — NL default, EN secundair
-	i18n: {
-		defaultLocale: 'nl',
-		locales: [
-			{ code: 'nl', language: 'nl-NL', file: 'nl.json', name: 'Nederlands' },
-			{ code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
-		],
-		strategy: 'no_prefix',
-		detectBrowserLanguage: false,
-	},
-
-	// Iconen lokaal gebundeld; nooit runtime-call naar Iconify CDN
-	icon: {
-		serverBundle: 'local',
-		customCollections: [
-			{ prefix: 'kh', dir: './app/components/icons' },
-		],
-	},
-
-	// Nuxt Content — collection-config zit in content.config.ts
-	content: {
-		build: {
-			markdown: {
-				toc: { depth: 3, searchDepth: 3 },
-				highlight: {
-					theme: { default: 'github-light', dark: 'github-dark' },
-				},
-			},
-		},
-	},
-
-	// PWA — registreer alvast, configuratie verfijnen we in Phase 5
-	pwa: {
-		registerType: 'autoUpdate',
-		manifest: {
-			name: '1000x',
-			short_name: '1000x',
-			lang: 'nl',
-			theme_color: '#0a0a0a',
-		},
-		workbox: {
-			globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
-		},
-	},
-
-	// ESLint module — laat antfu de stylistische source-of-truth zijn
-	eslint: {
-		config: {
-			stylistic: false,
-		},
-	},
-
-	// Niet voor publiek of zoekmachines — zie spec feature 18
-	routeRules: {
-		'/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-	},
-
-	app: {
-		head: {
-			meta: [
-				{ name: 'robots', content: 'noindex, nofollow' },
-			],
+export default defineAppConfig({
+	ui: {
+		colors: {
+			primary: 'red',
+			neutral: 'slate',
 		},
 	},
 })
 ```
 
-### `content.config.ts`
+### Logo en branding-strings
 
-Nieuw bestand in project root:
+Vind in de template de plek waar het logo wordt gerenderd (waarschijnlijk een component in `app/components/` met een `Logo.vue` of vergelijkbare naam). Vervang met de 1000x-stijl: een rode `1` gevolgd door default-foreground `000x`. Bijvoorbeeld:
+
+```vue
+<template>
+	<NuxtLink to="/" class="text-lg font-semibold tracking-tight">
+		<span class="text-primary">1</span>
+		<span>000x</span>
+	</NuxtLink>
+</template>
+```
+
+### Site-titel en meta
+
+Update in `nuxt.config.ts` of `app.config.ts` waar de template z'n eigen titel zet. Vervang met:
+
+```ts
+seo: {
+	siteName: '1000x',
+},
+```
+
+En voeg de noindex-headers toe (1000x is auth-gated, niet voor zoekmachines — zie spec feature 18):
+
+```ts
+routeRules: {
+	'/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+},
+
+app: {
+	head: {
+		meta: [
+			{ name: 'robots', content: 'noindex, nofollow' },
+		],
+	},
+},
+```
+
+---
+
+## 3. i18n — NL default, EN secondary
+
+Voeg `@nuxtjs/i18n` toe als de template het nog niet heeft:
+
+```bash
+pnpm add @nuxtjs/i18n
+```
+
+In `nuxt.config.ts`:
+
+```ts
+modules: [
+	// ... bestaande modules van de template
+	'@nuxtjs/i18n',
+],
+
+i18n: {
+	defaultLocale: 'nl',
+	locales: [
+		{ code: 'nl', language: 'nl-NL', file: 'nl.json', name: 'Nederlands' },
+		{ code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
+	],
+	strategy: 'no_prefix',
+	detectBrowserLanguage: false,
+},
+```
+
+Maak `i18n/locales/nl.json`:
+
+```json
+{
+	"app": {
+		"title": "1000x",
+		"loading": "Laden..."
+	}
+}
+```
+
+En `i18n/locales/en.json`:
+
+```json
+{
+	"app": {
+		"title": "1000x",
+		"loading": "Loading..."
+	}
+}
+```
+
+Strings in components vervangen met `$t('app.loading')` etc. Geen hardcoded UI-text meer.
+
+> **Belangrijk om te weten**: de template-content (markdown files in `content/`) is nu nog Engels. Die ga je later vervangen — eerst je eigen content laten verschijnen, dan zorgen voor NL/EN-varianten via `*.nl.md` en `*.en.md`. Volgt in template.
+
+---
+
+## 4. Content schema uitbreiden
+
+De template heeft een eigen `content.config.ts`. Open die en kijk wat erin staat — je gaat het uitbreiden, niet vervangen.
+
+Wat moet erbij voor 1000x:
 
 ```ts
 import { defineCollection, defineContentConfig, z } from '@nuxt/content'
+
+export const contentSchema = z.object({
+	// Velden die de template waarschijnlijk al heeft (of niet, dan toevoegen):
+	title: z.string(),
+	description: z.string().optional(),
+	icon: z.string().optional(),
+
+	// 1000x-specifiek:
+	scope: z.enum(['self', 'children']).optional(),    // sidebar scope-binding (feature 2)
+	nav: z.array(z.string()).optional(),                // didactische volgorde (feature 19)
+	order: z.number().optional(),
+	variants: z.array(z.object({                        // variant-tabs (feature 8)
+		id: z.string(),
+		label: z.string(),
+		icon: z.string(),
+	})).optional(),
+	schemaVersion: z.number().default(1),               // forward compat (feature 1)
+})
 
 export default defineContentConfig({
 	collections: {
 		content: defineCollection({
 			type: 'page',
 			source: '**/*.md',
-			schema: z.object({
-				title: z.string(),
-				description: z.string().optional(),
-				icon: z.string().optional(),
-				// Sidebar scope: feature 19
-				scope: z.enum(['self', 'children']).optional(),
-				// Didactische volgorde voor hoofdstukken: feature 19
-				nav: z.array(z.string()).optional(),
-				order: z.number().optional(),
-				// Variant-tabs: feature 8
-				variants: z.array(z.object({
-					id: z.string(),
-					label: z.string(),
-					icon: z.string(),
-				})).optional(),
-				// Forward compat: feature 1
-				schemaVersion: z.number().default(1),
-			}),
+			schema: contentSchema,
 		}),
 	},
 })
 ```
 
-### `eslint.config.mjs`
+Twee dingen om bewust te zijn:
 
-Nieuw bestand in project root:
+- **Named export `contentSchema`** zodat unit-tests het schema kunnen importeren (zie test-plan zodra we Stap 1 testen schrijven)
+- **`schemaVersion` heeft een default** — bestaande markdown-files zonder dat veld blijven werken. Migrators komen pas wanneer we de eerste breaking change doorvoeren (zie spec feature 1)
+
+---
+
+## 5. AI-context files
+
+Belangrijk voor latere Claude Code sessies, Cursor, Codex etc. Niet skippen — investeert in correcte agent-output.
+
+### `AGENTS.md` op project-root
+
+```md
+# 1000x — Agent Context
+
+> Canonical AI/agent context. CLAUDE.md en GEMINI.md zijn pointers naar dit bestand.
+
+## Project
+
+**1000x** — bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Doelpubliek: intern, werknemers. Niet voor publiek of zoekmachines. Gebouwd op de Nuxt UI docs-template als baseline.
+
+Zie `spec.md` voor de volledige product-specificatie, `features.md` voor de implementatie-volgorde, `template/` voor wijzigingen op de template-baseline, en `features/` voor alle 21 feature-specs.
+
+## Stack
+
+- **Baseline**: Nuxt UI docs-template (https://github.com/nuxt-ui-templates/docs)
+- **Framework**: Nuxt 4
+- **UI**: Nuxt UI v4
+- **Content**: Nuxt Content v3
+- **i18n**: `@nuxtjs/i18n` — NL default, EN secundair
+- **Iconen**: `@nuxt/icon` met lokale Iconify-bundles. Custom SVGs alleen als laatste redmiddel.
+- **Images**: `@nuxt/image` met IPX provider (vanaf het begin geïntegreerd in `ProseImg`-override)
+- **PWA**: `@vite-pwa/nuxt`
+- **Code-editor (later)**: CodeMirror 6
+- **Code-execution (later)**: Web Workers + WASM
+- **Persistentie Phase 1**: localStorage
+- **Deployment Phase 1**: SSG op Cloudflare Pages of Vercel
+
+## Drie soorten werk
+
+Wanneer een task binnenkomt, classificeer hem eerst:
+
+1. **Foundation** (`SCAFFOLDING.md`) — éénmalig setup: branding, i18n, schema, AGENTS, deployment
+2. **Template customization** (`template/`) — aanpassen wat de template levert: sidebar, layout-chrome, search, etc.
+3. **Eigen feature** (`features/`) — bouwen wat de template niet heeft: code-editor, card-trainer, AI-assistent, etc.
+
+Niet door elkaar halen. Een PR die zowel foundation als customizations als feature-werk doet wordt afgewezen.
+
+## Conventies
+
+### Code style
+
+- **Tabs** voor indentatie (size 4 in editor weergave)
+- **Single quotes** voor strings
+- **Geen semicolons** — `@antfu/eslint-config`
+- **No Prettier** — ESLint is alleenheerser
+- **Vue SFC**: `<script setup lang="ts">` voor nieuwe components
+- **Auto-imports** zijn aan
+
+### Iconen
+
+Nuxt UI v4 levert vrijwel alle componenten die we nodig hebben. Bij elk UI-element:
+
+1. Eerst checken of Nuxt UI v4 het levert (component én MDC-block)
+2. Pas als het niet bestaat of fundamenteel onvoldoende is, een eigen component bouwen door een Nuxt UI component te slot-overriden of te wrappen
+3. Volledig from-scratch alleen als laatste optie
+
+"Niet bestaat" betekent letterlijk niet bestaat — niet "bestaat maar ik wil iets anders". Smaak-verschillen los je op met theming via `app.config.ts`.
+
+Iconen zelf: eerste keuze Iconify (`lucide:search`, `tabler:code`, `simple-icons:javascript`). Niet beschikbaar? Iconify-set toevoegen. Geen passende? Custom SVG in `app/components/icons/`. Nooit inline SVG-strings in components.
+
+### Content
+
+- Frontmatter velden gevalideerd via Zod-schema in `content.config.ts`
+- Filenames blijven inhoudelijk (`closures.md`, niet `1.intro.md`). Volgorde via `nav: [...]`
+- Iedere directory met `scope: self` of `scope: children` is een sidebar-grens
+- Variants: `closures.junior.nl.md`, `closures.mid.nl.md`. Eén logische node in nav-tree
+- Assets in `public/` mirrort de content-tree
+
+### i18n
+
+- UI-strings in `i18n/locales/{lang}.json` — geen hardcoded strings
+- Content per taal: `page.nl.md`, `page.en.md`. Default `nl`
+- LocalStorage-keys bevatten `{lang}`: `draft:nl:syntax/javascript/closures`
+
+## Niet doen
+
+- Geen `.navigation.yml` — nav-tree komt uit filesystem + frontmatter + localStorage
+- Geen Prettier
+- Geen runtime-fetches naar Iconify CDN
+- Geen content scrapen of regurgiteren in AI-features
+- Geen telemetry in Phase 1
+```
+
+### `CLAUDE.md`
+
+```md
+# CLAUDE
+
+Lees `AGENTS.md` voor de canonical project-context.
+```
+
+### `GEMINI.md`
+
+```md
+# GEMINI
+
+Lees `AGENTS.md` voor de canonical project-context.
+```
+
+---
+
+## 7. ESLint en code style
+
+De template heeft waarschijnlijk z'n eigen ESLint-config. Vervang met onze config gebaseerd op `@antfu/eslint-config`:
+
+```bash
+pnpm add -D @antfu/eslint-config
+```
+
+`eslint.config.mjs`:
 
 ```js
 // @ts-check
@@ -232,14 +361,9 @@ export default withNuxt(
 )
 ```
 
-> **Let op**: bij eerste install bestaat `.nuxt/eslint.config.mjs` nog niet. Run `pnpm dev` of `pnpm postinstall` (`nuxt prepare`) één keer om die te genereren. Daarna werkt ESLint.
-
-### `.editorconfig`
-
-Nieuw bestand in project root:
+`.editorconfig` op project-root:
 
 ```
-# https://editorconfig.org
 root = true
 
 [*]
@@ -252,385 +376,92 @@ insert_final_newline = true
 
 [*.{md,txt}]
 trim_trailing_whitespace = false
-
-[*.{bat,cmd}]
-end_of_line = crlf
 ```
 
-### `.vscode/settings.json`
-
-Nieuw bestand in `.vscode/settings.json`:
+`.vscode/settings.json`:
 
 ```json
 {
 	"editor.formatOnSave": false,
 	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": "explicit",
-		"source.organizeImports": "never"
+		"source.fixAll.eslint": "explicit"
 	},
-	"eslint.validate": [
-		"javascript",
-		"javascriptreact",
-		"typescript",
-		"typescriptreact",
-		"vue",
-		"html",
-		"markdown",
-		"json",
-		"jsonc",
-		"yaml"
-	],
 	"prettier.enable": false,
 	"typescript.tsdk": "node_modules/typescript/lib"
 }
 ```
 
-### `tsconfig.json`
-
-In Nuxt 4 één tsconfig in de root. Vervang met:
-
-```json
-{
-	"extends": "./.nuxt/tsconfig.json"
-}
-```
-
-### `app/assets/css/main.css`
-
-Nieuw bestand. Tailwind 4 + Nuxt UI v4 init:
-
-```css
-@import "tailwindcss";
-@import "@nuxt/ui";
-
-@source "../../../content/**/*";
-```
-
-> Het `@source`-pad is `../../../content/**/*` — drie levels omhoog vanaf `app/assets/css/`, dan content/. Niet aanpassen.
-
-### `package.json` — scripts en hooks
-
-Patch je bestaande `package.json` zodat hij dit bevat (merge met wat er al staat):
+`package.json` scripts (merge met wat de template al heeft):
 
 ```json
 {
 	"scripts": {
-		"build": "nuxt build",
-		"dev": "nuxt dev",
-		"generate": "nuxt generate",
-		"preview": "nuxt preview",
-		"postinstall": "nuxt prepare && simple-git-hooks",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"typecheck": "nuxt typecheck"
-	},
-	"simple-git-hooks": {
-		"pre-commit": "pnpm lint-staged"
-	},
-	"lint-staged": {
-		"*.{js,ts,vue,jsx,tsx,json,jsonc,yml,yaml}": "eslint --fix"
 	}
 }
 ```
 
----
-
-## 4. AI-context files
-
-### `AGENTS.md`
-
-Canonical context. Voor Claude Code, Cursor, Codex, en andere agents. Nieuw bestand in project root:
-
-```md
-# 1000x — Agent Context
-
-> Canonical AI/agent context. CLAUDE.md en GEMINI.md zijn pointers naar dit bestand.
-
-## Project
-
-**1000x** — bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Doelpubliek: intern, werknemers. Niet voor publiek of zoekmachines.
-
-Zie `spec.md` voor de volledige product-specificatie en `features.md` voor de implementatie-volgorde per fase.
-
-## Stack
-
-- **Framework**: Nuxt 4 (stable; Nuxt 3 EOL juli 2026)
-- **UI**: Nuxt UI v4 (`@nuxt/ui` — geünificeerd open-source)
-- **Content**: Nuxt Content v3 (markdown, SQLite-backed in productie)
-- **i18n**: `@nuxtjs/i18n` — NL default, EN secundair
-- **Iconen**: `@nuxt/icon` met lokale Iconify-bundles. Custom SVG's alleen onder `app/components/icons/` als er geen Iconify-icoon bestaat. Geen inline SVG's in components.
-- **PWA**: `@vite-pwa/nuxt` — Workbox, cache-as-you-go
-- **Code-editor (Phase 4)**: CodeMirror 6
-- **Code-execution (Phase 4)**: Web Workers + WASM, runtime per taal
-- **Persistentie Phase 1**: localStorage voor drafts en lokale tree-mutaties
-- **Persistentie later**: IndexedDB → git PR-flow
-- **Deployment Phase 1**: SSG op Cloudflare Pages of Vercel
-- **Deployment later**: Dockerized voor Azure/AWS/on-prem
-
-## Repository structuur
-
-```
-1000x/
-├── app/
-│   ├── assets/css/main.css       # Tailwind + Nuxt UI imports
-│   ├── components/
-│   │   └── icons/                # Custom SVGs only (Iconify is preferred)
-│   ├── layouts/
-│   ├── pages/
-│   ├── app.vue
-│   └── app.config.ts
-├── content/                      # Markdown content (root level, NIET in app/)
-├── i18n/locales/                 # nl.json, en.json
-├── public/                       # Static assets, mirrort de content-tree
-├── server/                       # Server routes (AI etc., later)
-├── content.config.ts             # Nuxt Content collections + frontmatter schema
-├── nuxt.config.ts
-├── eslint.config.mjs             # withNuxt(antfu({...}))
-└── package.json
-```
-
-## Dev commands
-
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | Start dev server op localhost:3000 |
-| `pnpm build` | Production build |
-| `pnpm generate` | SSG output naar `.output/public/` |
-| `pnpm preview` | Preview de productie-build lokaal |
-| `pnpm lint` | ESLint check |
-| `pnpm lint:fix` | ESLint auto-fix |
-| `pnpm typecheck` | TypeScript-check via `nuxt typecheck` |
-
-## Conventies
-
-### Code style
-
-- **Tabs** voor indentatie (size 4 in editor weergave). Geen spaces.
-- **Single quotes** voor strings.
-- **Geen semicolons** — antfu's preset.
-- **No Prettier** — ESLint is alleenheerser via `@antfu/eslint-config`.
-- **Vue SFC**: `<script setup lang="ts">` altijd voor nieuwe components.
-- **Auto-imports** zijn aan — gebruik `useRouter`, `ref`, `computed` zonder import.
-
-### Iconen
-
-- Eerste keuze: een Iconify-set die al geïnstalleerd is (`lucide`, `tabler`, `simple-icons`). Refereren als `lucide:search`, `tabler:code`, `simple-icons:javascript`.
-- Niet beschikbaar in een set? Voeg een nieuwe Iconify-set als devDependency toe (`@iconify-json/<set>`) — niet zelf SVG's downloaden.
-- Geen passende Iconify-icoon? Maak een Vue-component in `app/components/icons/` en register als custom collection met prefix `kh:`.
-- **Nooit inline SVG-strings** in andere components.
-
-### Content / markdown
-
-- Frontmatter velden zijn gevalideerd via Zod-schema in `content.config.ts`. Onbekende velden → dev warning, geen crash.
-- Filenames blijven inhoudelijk (`closures.md`, niet `1.intro.md`). Volgorde via `nav: [...]` in `index.md` van een directory.
-- Iedere directory met `scope: self` of `scope: children` is een sidebar-grens. Zie spec feature 19.
-- Variants: `closures.junior.nl.md`, `closures.mid.nl.md` etc. Eén logische node in de nav-tree.
-- Assets in `public/` mirrort de content-tree: `public/syntax/javascript/closures/figure-1.png`.
-
-### i18n
-
-- UI-strings in `i18n/locales/{lang}.json` — geen hardcoded strings in components.
-- Content per taal: `page.nl.md`, `page.en.md`. Default `nl`.
-- LocalStorage-keys bevatten `{lang}`: `draft:nl:syntax/javascript/closures`.
-
-## Architectuur-grenzen
-
-- **Markdown is de bron van waarheid**. Geen content-database; database komt later voor non-content (gebruikers, comments, audit logs).
-- **Phase 1 = lokaal-first**: drafts en tree-mutaties in localStorage. Geen netwerk-dependency.
-- **AI is geïsoleerd**: een AI-uitval mag nooit andere features raken. Zie spec feature 12.
-- **Privé-deployment**: `robots.txt` Disallow + meta noindex + auth-gate in alle deployed envs. Zie spec feature 18.
-
-## Niet doen
-
-- Geen `.navigation.yml`-bestanden — nav-tree komt uit filesystem + frontmatter + localStorage. Zie spec feature 19.
-- Geen Prettier installeren of configureren.
-- Geen runtime-fetches naar Iconify CDN — `serverBundle: 'local'` is verplicht.
-- Geen content scrapen of regurgiteren in AI-features (copyright).
-- Geen telemetry in Phase 1; pas in latere fases. Architectuur staat het toe maar implementeren komt later.
-```
-
-### `CLAUDE.md`
-
-Pointer-bestand:
-
-```md
-# CLAUDE
-
-Lees `AGENTS.md` voor de canonical project-context.
-```
-
-### `GEMINI.md`
-
-```md
-# GEMINI
-
-Lees `AGENTS.md` voor de canonical project-context.
-```
+Run `pnpm lint:fix` één keer om alle template-files automatisch in onze stijl te brengen. Daarna één commit "chore: align with antfu eslint config".
 
 ---
 
-## 5. Folder-structuur aanvullen
+## 8. Branden van template-content (NIET verwijderen)
 
-`pnpm create nuxt` heeft de meeste mappen al gemaakt. Vul aan:
+De template komt met een uitgebreide demo-content (`content/`) die alle markdown-features showcaset: code blocks, prose elements, MDC components, search-resultaten, dark-mode kleuring, image embeds, callouts. **Behoud deze content tijdens foundation en customizations** — het is je live regression test-suite. Als je iets sloopt aan de markdown-pipeline, zie je het direct in de gebrande demo-content.
 
-```bash
-mkdir -p app/assets/css
-mkdir -p app/components/icons
-mkdir -p app/layouts
-mkdir -p app/pages
-mkdir -p content
-mkdir -p i18n/locales
-mkdir -p public
-mkdir -p server
-```
+Wat je wel doet:
 
----
+- **Brand de strings** die naar Nuxt UI of de template zelf verwijzen. Zoeken op patronen als "Nuxt UI", "Docs Template", "Nuxt UI Documentation Template" en vervang door 1000x-equivalenten. Vooral op de homepage (`content/index.md` of vergelijkbaar) en in metadata
+- **Behoud de content-volume intact**. Niet pagina's verwijderen — de breedte aan voorbeelden beschermt je tegen regressies
 
-## 6. Eerste content + page
+Wat je niet doet:
 
-### `i18n/locales/nl.json`
+- **Niet `content/` leegmaken**. Wanneer je dat doet verlies je dekking op markdown features die je later toch wilt blijven testen
+- **Geen eigen "Welkom bij 1000x"-pagina toevoegen die de demo-home overschrijft**. Pas wanneer je in fase 3 echte 1000x-content gaat schrijven, kun je de demo-pagina's verplaatsen naar `content/_demo/` of `content/_kitchen-sink/` zodat ze niet in de hoofdnavigatie verschijnen maar wel als regressie-test beschikbaar blijven
 
-```json
-{
-	"app": {
-		"title": "1000x",
-		"loading": "Laden..."
-	}
-}
-```
+Refresh `localhost:3000` — je zou nu een gebrand 1000x-project moeten zien met de template-content nog volledig functioneel.
 
-### `i18n/locales/en.json`
-
-```json
-{
-	"app": {
-		"title": "1000x",
-		"loading": "Loading..."
-	}
-}
-```
-
-### `content/index.md`
-
-```md
----
-title: Welkom bij 1000x
-description: Documentatie- en leersysteem voor het team
----
-
-# Welkom bij 1000x
-
-Dit is de eerste pagina, gerenderd door Nuxt Content. Als je dit ziet, werkt de
-markdown-pipeline.
-
-## Wat nu?
-
-Volg de implementatie-roadmap uit `features.md`. Phase 1 zit nog in opbouw —
-deze pagina is alleen een smoke-test.
-
-## Code-block check
-
-Een snippet om te zien of syntax highlighting werkt:
-
-\`\`\`ts
-const greet = (name: string) => `hoi ${name}`
-console.log(greet('wereld'))
-\`\`\`
-```
-
-> Vervang de `\`\`\`` rond het code-block met echte triple-backticks. Dit is markdown-escape-noise omdat dit document zelf markdown is.
-
-### `app/app.vue`
-
-Vervang met:
-
-```vue
-<template>
-	<UApp>
-		<NuxtPage />
-	</UApp>
-</template>
-```
-
-### `app/pages/index.vue`
-
-Nieuw bestand:
-
-```vue
-<script setup lang="ts">
-const { data: home } = await useAsyncData('home', () =>
-	queryCollection('content').path('/').first(),
-)
-
-useSeoMeta({
-	title: () => home.value?.title,
-	description: () => home.value?.description,
-})
-</script>
-
-<template>
-	<div class="mx-auto max-w-3xl px-6 py-12 prose dark:prose-invert">
-		<ContentRenderer v-if="home" :value="home" />
-		<div v-else>
-			{{ $t('app.loading') }}
-		</div>
-	</div>
-</template>
-```
-
----
-
-## 7. Eerste run
-
-```bash
-pnpm dev
-```
-
-Open http://localhost:3000.
-
-**Verwacht resultaat:**
-- _"Welkom bij 1000x"_ als H1
-- Beschrijving + tekst eronder gerenderd
-- Code-block met syntax highlighting (github-light/dark afhankelijk van system theme)
-- Geen errors in console
-
-**Sanity-checks** in een tweede terminal:
-
-```bash
-pnpm lint        # zou 0 errors moeten geven
-pnpm typecheck   # zou 0 errors moeten geven
-```
-
----
-
-## 8. Eerste commit
-
-```bash
-git add .
-git commit -m "chore: scaffold 1000x on nuxt 4 + nuxt ui v4 + nuxt content v3"
-```
-
-De `simple-git-hooks` postinstall heeft de pre-commit hook geïnstalleerd; bij toekomstige commits draait `lint-staged` automatisch op gewijzigde files.
 
 ---
 
 ## Wat hierna
 
-Phase 1 uit `features.md`:
-1. **Markdown rendering & content-engine** — uitbreiden met tabs, callouts, asset-conventie. Reeds basis werkend.
-2. **Section sidebar** — bouwen op `queryCollectionNavigation` met scope-rendering. Kern van Phase 1.
-3. **Header met dropdown-menu's** — categorieën uit content-tree, geen hardcoded array.
-4. **Internationalisatie** — i18n-strings naar de UI-componenten als ze gebouwd worden.
+Foundation is klaar. Volgende fase: `template/`. Per customization één PR met scope, beschrijving en tests.
 
-Voor elk: nieuwe component-tree onder `app/components/`, layouts in `app/layouts/`, en frontmatter-velden uitbreiden in `content.config.ts` als nodig.
+Eerste twee customizations om te overwegen:
+
+1. **`01-branding.md`** — als je in deze foundation-fase iets bent vergeten of fijn-tuner wilt zijn
+2. **`02-content-schema.md`** — uitwerken hoe `scope`, `nav` etc. visueel werken in de bestaande template-sidebar voordat we 'm vervangen
+
+Daarna de grotere customizations (sidebar-replacement, layout-chrome, smart toc, search-scope-filter), en pas dán de echte 1000x-features uit `features/`.
 
 ---
 
-## Gotchas die ik tegenkwam tijdens onderzoek
+## Gotchas
 
-- **`@nuxt/ui` v4 = vroeger Pro + open-source samen.** Je hoeft `@nuxt/ui-pro` niet meer te installeren of te betalen.
-- **`@source` pad in main.css**: `../../../content/**/*` — drie levels — komt door Nuxt 4's `app/`-srcDir.
-- **Pnpm v10 build-script approval**: zonder `pnpm.onlyBuiltDependencies` in package.json crasht `better-sqlite3`'s native binding postinstall.
-- **`.nuxt/eslint.config.mjs` bestaat pas na `nuxt prepare`**: dus ESLint werkt pas na een eerste `pnpm dev` of `pnpm postinstall`.
-- **Native SQLite** kan ook (Node 22.5+) door `experimental: { nativeSqlite: true }` toe te voegen aan de content-config — scheelt een 4 MB native dep maar is experimenteel.
-- **`tsconfig.json` is één bestand in Nuxt 4**, niet meerdere zoals in Nuxt 3. Extends `./.nuxt/tsconfig.json`.
+Te verwachten dingen die de template-aanpak met zich meebrengt:
+
+- **Pnpm v10 build-script approval**: bij `better-sqlite3` of `simple-git-hooks` postinstall kan `pnpm install` falen. Voeg toe aan `package.json`:
+  ```json
+  "pnpm": {
+      "onlyBuiltDependencies": ["better-sqlite3", "@parcel/watcher", "esbuild", "simple-git-hooks", "vue-demi"]
+  }
+  ```
+- **`.nuxt/eslint.config.mjs` bestaat pas na `nuxt prepare`**: dus ESLint werkt pas na een eerste `pnpm dev` of `pnpm postinstall`
+- **De template kan een eigen content-collection hebben** met andere schema-namen dan wij gebruiken. Controleer voordat je vervangt
+- **Native SQLite** kan ook (Node 22.5+) door `experimental: { nativeSqlite: true }` in content-config — scheelt 4MB native dep maar is experimenteel
+
+---
+
+## Wat dit document NIET dekt
+
+- Sidebar replacement (template)
+- Layout chrome (template)
+- Smart toc, scope-bound search (template)
+- Eigen features zoals code-editor, card-trainer, AI-assistent (`features/`)
+- Auth-gate / private deployment (feature 18)
+- Content-management UI (feature 11)
+
+Die zitten allemaal in latere fases. Foundation gaat alleen over: hoe krijg ik een gebrand, draaiend project waar al het andere op kan voortbouwen.

@@ -1,75 +1,43 @@
-# Nuxt Minimal Starter
+# 1000x
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+> Bedrijfsbreed second-brain — documentatiesite, wiki en interactief leersysteem in één. Gebouwd op de [Nuxt UI docs-template](https://github.com/nuxt-ui-templates/docs) als baseline.
+
+Intern, auth-gated, niet voor publiek of zoekmachines (`X-Robots-Tag: noindex, nofollow`).
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+## Development server
 
-Start the development server on `http://localhost:3000`:
+Op `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
 
-Build the application for production:
-
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+pnpm build         # SSR build
+pnpm generate      # Static site (.output/public)
+pnpm preview       # Preview production build
 ```
 
-Locally preview production build:
+## Quality
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+pnpm lint          # ESLint check (antfu config)
+pnpm lint:fix      # ESLint --fix
+pnpm typecheck     # nuxt typecheck (vue-tsc)
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Documenten
+
+- `AGENTS.md` — canonical agent-context (CLAUDE.md / GEMINI.md zijn pointers)
+- `TDD/SPEC.md` — productspecificatie
+- `TDD/FEATURES.md` — overzicht van de 21 features
+- `TDD/SCAFFOLDING.md` — foundation-setup-instructies
+- `TDD/features/` — per-feature specs

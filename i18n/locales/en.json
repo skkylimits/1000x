@@ -2,50 +2,5 @@
 	"app": {
 		"title": "1000x",
 		"loading": "Loading..."
-	},
-	"header": {
-		"search": "Search",
-		"ai": "AI assistant",
-		"language": "Language",
-		"theme": "Theme",
-		"settings": "Settings"
-	},
-	"nav": {
-		"the_lab": "The Lab",
-		"syntax": "Syntax",
-		"kitt": "Kitt",
-		"vuln": "Vuln",
-		"xpl01ts": "Xpl01ts",
-		"knowledge_base": "Knowledge Base"
-	},
-	"sidebar": {
-		"new_chapter": "+ new chapter",
-		"new_page": "+ new page",
-		"rename": "Rename",
-		"delete": "Delete"
-	},
-	"panel": {
-		"toc": "Table of contents",
-		"editor": "Code editor",
-		"cards": "Cards",
-		"comments": "Comments"
-	},
-	"page": {
-		"changelog": "Changelog",
-		"prev": "Previous",
-		"next": "Next",
-		"view": "View",
-		"edit": "Edit",
-		"copy": "Copy",
-		"copy_markdown": "Copy as markdown",
-		"open_claude": "Open in Claude",
-		"open_chatgpt": "Open in ChatGPT",
-		"view_markdown": "View as markdown",
-		"tab_content": "Content",
-		"tab_examples": "Examples",
-		"tab_exercises": "Exercises",
-		"tab_notes": "Notes",
-		"tab_cheatsheet": "Cheatsheet",
-		"tab_faq": "FAQ"
 	}
 }

@@ -1,55 +1,114 @@
 <script setup lang="ts">
-const { t } = useI18n()
-const route = useRoute()
+import type { ContentNavigationItem } from '@nuxt/content'
+import { findPageHeadline } from '@nuxt/content/utils'
 
-const { data: page } = await useAsyncData(`page-${route.path}`, () =>
-	queryCollection('content').path(route.path).first())
-
-useSeoMeta({
-	title: () => page.value?.title,
-	description: () => page.value?.description,
+definePageMeta({
+	layout: 'docs',
 })
 
-const contentTabs = computed(() => [
-	{ value: 'content', label: t('page.tab_content'), icon: 'lucide:book-open' },
-	{ value: 'examples', label: t('page.tab_examples'), icon: 'lucide:code' },
-	{ value: 'exercises', label: t('page.tab_exercises'), icon: 'lucide:dumbbell' },
-	{ value: 'notes', label: t('page.tab_notes'), icon: 'lucide:notebook-pen' },
-	{ value: 'cheatsheet', label: t('page.tab_cheatsheet'), icon: 'lucide:list-checks' },
-	{ value: 'faq', label: t('page.tab_faq'), icon: 'lucide:circle-help' },
-])
+const route = useRoute()
+const { toc } = useAppConfig()
+const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 
-const activeTab = ref('content')
+const { data: page } = await useAsyncData(route.path, () => queryCollection('docs').path(route.path).first())
+if (!page.value) {
+	throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+}
+
+const { data: surround } = await useAsyncData(`${route.path}-surround`, () => {
+	return queryCollectionItemSurroundings('docs', route.path, {
+		fields: ['description'],
+	})
+})
+
+const title = page.value.seo?.title || page.value.title
+const description = page.value.seo?.description || page.value.description
+
+useSeoMeta({
+	title,
+	ogTitle: title,
+	description,
+	ogDescription: description,
+})
+
+const headline = computed(() => findPageHeadline(navigation?.value, page.value?.path))
+
+defineOgImageComponent('Docs', {
+	headline: headline.value,
+})
+
+const links = computed(() => {
+	const links = []
+	if (toc?.bottom?.edit) {
+		links.push({
+			icon: 'i-lucide-external-link',
+			label: 'Edit this page',
+			to: `${toc.bottom.edit}/${page?.value?.stem}.${page?.value?.extension}`,
+			target: '_blank',
+		})
+	}
+
+	return [...links, ...(toc?.bottom?.links || [])].filter(Boolean)
+})
 </script>
 
 <template>
-	<div v-if="page">
-		<PageBreadcrumb class="mb-4" />
-
-		<div class="@container mb-3 flex items-start justify-between gap-6">
-			<h1 class="text-4xl font-bold tracking-tight">
-				{{ page.title }}
-			</h1>
-			<PageActionBar class="mt-2 shrink-0" />
-		</div>
-
-		<p
-			v-if="page.description"
-			class="mb-8 text-lg text-(--ui-text-muted)"
+	<UPage v-if="page">
+		<UPageHeader
+			:title="page.title"
+			:description="page.description"
+			:headline="headline"
 		>
-			{{ page.description }}
-		</p>
+			<template #links>
+				<UButton
+					v-for="(link, index) in page.links"
+					:key="index"
+					v-bind="link"
+				/>
 
-		<PageContentTabs v-model="activeTab" :items="contentTabs" class="mb-6" />
+				<PageHeaderLinks />
+			</template>
+		</UPageHeader>
 
-		<div v-if="activeTab === 'content'" class="prose dark:prose-invert max-w-none">
-			<ContentRenderer :value="page" />
-		</div>
-		<div v-else class="text-(--ui-text-muted)">
-			Placeholder voor tab "{{ contentTabs.find(t => t.value === activeTab)?.label }}".
-		</div>
-	</div>
-	<div v-else class="text-(--ui-text-muted)">
-		Pagina niet gevonden.
-	</div>
+		<UPageBody>
+			<ContentRenderer
+				v-if="page"
+				:value="page"
+			/>
+
+			<USeparator v-if="surround?.length" />
+
+			<UContentSurround :surround="surround" />
+		</UPageBody>
+
+		<template
+			v-if="page?.body?.toc?.links?.length"
+			#right
+		>
+			<UContentToc
+				:title="toc?.title"
+				:links="page.body?.toc?.links"
+			>
+				<template
+					v-if="toc?.bottom"
+					#bottom
+				>
+					<div
+						class="hidden lg:block space-y-6"
+						:class="{ 'mt-6!': page.body?.toc?.links?.length }"
+					>
+						<USeparator
+							v-if="page.body?.toc?.links?.length"
+							type="dashed"
+						/>
+
+						<UPageLinks
+							:title="toc.bottom.title"
+							:links="links"
+						/>
+					</div>
+				</template>
+			</UContentToc>
+		</template>
+	</UPage>
 </template>

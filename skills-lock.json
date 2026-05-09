@@ -1,0 +1,53 @@
+{
+	"version": 1,
+	"skills": {
+		"checklist": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/checklist/SKILL.md",
+			"computedHash": "59d7e670571153eda757eb69f941caa750fc44eabf6f9f53412e0888956ae544"
+		},
+		"code-review": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/code-review/SKILL.md",
+			"computedHash": "483b507c52271c5846c18f6da15884fe12bd6660671a2caea8e535c52540a37d"
+		},
+		"feature-generator": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/feature-generator/SKILL.md",
+			"computedHash": "f6e2ee6217fa60c57b437a56dc70f2561c720a5bfaa6cf349e54d4331f2a7bd5"
+		},
+		"first-five": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/first-five/SKILL.md",
+			"computedHash": "275e31406459632634c775e155afca89914521fa0ec4a40bd44c550a4c93a1cf"
+		},
+		"review-order": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/review-order/SKILL.md",
+			"computedHash": "d668f90a5be69bdf7451daad3e2f6947cc60341f5447b8693e8887e7feab7167"
+		},
+		"spec-generator": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/spec-generator/SKILL.md",
+			"computedHash": "5fb617be71805a5f6da278b665931ee2110d4631606f69f197b9dd59a5af42f2"
+		},
+		"triage": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/triage/SKILL.md",
+			"computedHash": "2d77841e28ef17dfd197fdbf7ba62e6d307d37b572b55a037334c7916928e311"
+		},
+		"zombies": {
+			"source": "unlearndev/skills",
+			"sourceType": "github",
+			"skillPath": "skills/zombies/SKILL.md",
+			"computedHash": "218e25d29de8c83f6ade078f233dd5140162af42b3bd5d46d5a641db8dba3df2"
+		}
+	}
+}

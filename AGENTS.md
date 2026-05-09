@@ -4,102 +4,78 @@
 
 ## Project
 
-**1000x** — bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Doelpubliek: intern, werknemers. Niet voor publiek of zoekmachines.
+**1000x** — bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Doelpubliek: intern, werknemers. Niet voor publiek of zoekmachines. Gebouwd op de Nuxt UI docs-template als baseline.
 
-Zie `spec.md` voor de volledige product-specificatie en `features.md` voor de implementatie-volgorde per fase.
+Zie `TDD/SPEC.md` voor de volledige product-specificatie, `TDD/FEATURES.md` voor de implementatie-volgorde, `TDD/SCAFFOLDING.md` voor de foundation-setup, en `TDD/features/` voor alle 21 feature-specs.
 
 ## Stack
 
-- **Framework**: Nuxt 4 (stable; Nuxt 3 EOL juli 2026)
-- **UI**: Nuxt UI v4 (`@nuxt/ui` — geünificeerd open-source)
-- **Content**: Nuxt Content v3 (markdown, SQLite-backed in productie)
+- **Baseline**: Nuxt UI docs-template (https://github.com/nuxt-ui-templates/docs)
+- **Framework**: Nuxt 4
+- **UI**: Nuxt UI v4
+- **Content**: Nuxt Content v3
 - **i18n**: `@nuxtjs/i18n` — NL default, EN secundair
-- **Iconen**: `@nuxt/icon` met lokale Iconify-bundles. Custom SVG's alleen onder `app/components/icons/` als er geen Iconify-icoon bestaat. Geen inline SVG's in components.
-- **PWA**: `@vite-pwa/nuxt` — Workbox, cache-as-you-go
-- **Code-editor (Phase 4)**: CodeMirror 6
-- **Code-execution (Phase 4)**: Web Workers + WASM, runtime per taal
-- **Persistentie Phase 1**: localStorage voor drafts en lokale tree-mutaties
-- **Persistentie later**: IndexedDB → git PR-flow
+- **Iconen**: `@nuxt/icon` met lokale Iconify-bundles. Custom SVGs alleen als laatste redmiddel.
+- **Images**: `@nuxt/image` met IPX provider (vanaf het begin geïntegreerd in `ProseImg`-override)
+- **PWA**: `@vite-pwa/nuxt`
+- **Code-editor (later)**: CodeMirror 6
+- **Code-execution (later)**: Web Workers + WASM
+- **Persistentie Phase 1**: localStorage
 - **Deployment Phase 1**: SSG op Cloudflare Pages of Vercel
-- **Deployment later**: Dockerized voor Azure/AWS/on-prem
 
-## Repository structuur
+## Drie soorten werk
 
-```
-1000x/
-├── app/
-│   ├── assets/css/main.css       # Tailwind + Nuxt UI imports
-│   ├── components/
-│   │   └── icons/                # Custom SVGs only (Iconify is preferred)
-│   ├── layouts/
-│   ├── pages/
-│   ├── app.vue
-│   └── app.config.ts
-├── content/                      # Markdown content (root level, NIET in app/)
-├── i18n/locales/                 # nl.json, en.json
-├── public/                       # Static assets, mirrort de content-tree
-├── server/                       # Server routes (AI etc., later)
-├── content.config.ts             # Nuxt Content collections + frontmatter schema
-├── nuxt.config.ts
-├── eslint.config.mjs             # withNuxt(antfu({...}))
-└── package.json
-```
+Wanneer een task binnenkomt, classificeer hem eerst:
 
-## Dev commands
+1. **Foundation** (`TDD/SCAFFOLDING.md`) — éénmalig setup: branding, i18n, schema, AGENTS, deployment
+2. **Template customization** (later, `template/`) — aanpassen wat de template levert: sidebar, layout-chrome, search, etc.
+3. **Eigen feature** (`TDD/features/`) — bouwen wat de template niet heeft: code-editor, card-trainer, AI-assistent, etc.
 
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | Start dev server op localhost:3000 |
-| `pnpm build` | Production build |
-| `pnpm generate` | SSG output naar `.output/public/` |
-| `pnpm preview` | Preview de productie-build lokaal |
-| `pnpm lint` | ESLint check |
-| `pnpm lint:fix` | ESLint auto-fix |
-| `pnpm typecheck` | TypeScript-check via `nuxt typecheck` |
+Niet door elkaar halen. Een PR die zowel foundation als customizations als feature-werk doet wordt afgewezen.
 
 ## Conventies
 
 ### Code style
 
-- **Tabs** voor indentatie (size 4 in editor weergave). Geen spaces.
-- **Single quotes** voor strings.
-- **Geen semicolons** — antfu's preset.
-- **No Prettier** — ESLint is alleenheerser via `@antfu/eslint-config`.
-- **Vue SFC**: `<script setup lang="ts">` altijd voor nieuwe components.
-- **Auto-imports** zijn aan — gebruik `useRouter`, `ref`, `computed` zonder import.
+- **Tabs** voor indentatie (size 4 in editor weergave)
+- **Single quotes** voor strings
+- **Geen semicolons** — `@antfu/eslint-config`
+- **No Prettier** — ESLint is alleenheerser
+- **Vue SFC**: `<script setup lang="ts">` voor nieuwe components
+- **Auto-imports** zijn aan
+
+### Componenten
+
+Nuxt UI v4 levert vrijwel alle componenten die we nodig hebben. Bij elk UI-element:
+
+1. Eerst checken of Nuxt UI v4 het levert (component én MDC-block)
+2. Pas als het niet bestaat of fundamenteel onvoldoende is, een eigen component bouwen door een Nuxt UI component te slot-overriden of te wrappen
+3. Volledig from-scratch alleen als laatste optie
+
+"Niet bestaat" betekent letterlijk niet bestaat — niet "bestaat maar ik wil iets anders". Smaak-verschillen los je op met theming via `app.config.ts`.
 
 ### Iconen
 
-- Eerste keuze: een Iconify-set die al geïnstalleerd is (`lucide`, `tabler`, `simple-icons`). Refereren als `lucide:search`, `tabler:code`, `simple-icons:javascript`.
-- Niet beschikbaar in een set? Voeg een nieuwe Iconify-set als devDependency toe (`@iconify-json/<set>`) — niet zelf SVG's downloaden.
-- Geen passende Iconify-icoon? Maak een Vue-component in `app/components/icons/` en register als custom collection met prefix `kh:`.
-- **Nooit inline SVG-strings** in andere components.
+Eerste keuze Iconify (`lucide:search`, `tabler:code`, `simple-icons:javascript`). Niet beschikbaar? Iconify-set toevoegen. Geen passende? Custom SVG in `app/components/icons/`. Nooit inline SVG-strings in components.
 
-### Content / markdown
+### Content
 
-- Frontmatter velden zijn gevalideerd via Zod-schema in `content.config.ts`. Onbekende velden → dev warning, geen crash.
-- Filenames blijven inhoudelijk (`closures.md`, niet `1.intro.md`). Volgorde via `nav: [...]` in `index.md` van een directory.
-- Iedere directory met `scope: self` of `scope: children` is een sidebar-grens. Zie spec feature 19.
-- Variants: `closures.junior.nl.md`, `closures.mid.nl.md` etc. Eén logische node in de nav-tree.
-- Assets in `public/` mirrort de content-tree: `public/syntax/javascript/closures/figure-1.png`.
+- Frontmatter velden gevalideerd via Zod-schema in `content.config.ts`
+- Filenames blijven inhoudelijk (`closures.md`, niet `1.intro.md`). Volgorde via `nav: [...]`
+- Iedere directory met `scope: self` of `scope: children` is een sidebar-grens
+- Variants: `closures.junior.nl.md`, `closures.mid.nl.md`. Eén logische node in nav-tree
+- Assets in `public/` mirrort de content-tree
 
 ### i18n
 
-- UI-strings in `i18n/locales/{lang}.json` — geen hardcoded strings in components.
-- Content per taal: `page.nl.md`, `page.en.md`. Default `nl`.
-- LocalStorage-keys bevatten `{lang}`: `draft:nl:syntax/javascript/closures`.
-
-## Architectuur-grenzen
-
-- **Markdown is de bron van waarheid**. Geen content-database; database komt later voor non-content (gebruikers, comments, audit logs).
-- **Phase 1 = lokaal-first**: drafts en tree-mutaties in localStorage. Geen netwerk-dependency.
-- **AI is geïsoleerd**: een AI-uitval mag nooit andere features raken. Zie spec feature 12.
-- **Privé-deployment**: `robots.txt` Disallow + meta noindex + auth-gate in alle deployed envs. Zie spec feature 18.
+- UI-strings in `i18n/locales/{lang}.json` — geen hardcoded strings
+- Content per taal: `page.nl.md`, `page.en.md`. Default `nl`
+- LocalStorage-keys bevatten `{lang}`: `draft:nl:syntax/javascript/closures`
 
 ## Niet doen
 
-- Geen `.navigation.yml`-bestanden — nav-tree komt uit filesystem + frontmatter + localStorage. Zie spec feature 19.
-- Geen Prettier installeren of configureren.
-- Geen runtime-fetches naar Iconify CDN — `serverBundle: 'local'` is verplicht.
-- Geen content scrapen of regurgiteren in AI-features (copyright).
-- Geen telemetry in Phase 1; pas in latere fases. Architectuur staat het toe maar implementeren komt later.
+- Geen `.navigation.yml` — nav-tree komt uit filesystem + frontmatter + localStorage
+- Geen Prettier
+- Geen runtime-fetches naar Iconify CDN
+- Geen content scrapen of regurgiteren in AI-features
+- Geen telemetry in Phase 1

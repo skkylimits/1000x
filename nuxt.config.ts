@@ -1,26 +1,32 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	compatibilityDate: '2026-05-03',
-	devtools: { enabled: true },
-
 	modules: [
 		'@nuxt/eslint',
-		'@nuxt/content',
+		'@nuxt/image',
 		'@nuxt/ui',
-		'@nuxt/icon',
+		'@nuxt/content',
 		'@nuxtjs/i18n',
-		'@vite-pwa/nuxt',
+		'nuxt-og-image',
+		'nuxt-llms',
+		'@nuxtjs/mcp-toolkit',
 	],
+
+	devtools: {
+		enabled: true,
+	},
 
 	css: ['~/assets/css/main.css'],
 
-	// Auto-import components without folder-prefix so <AppHeader />, <PageActionBar />
-	// resolve regardless of whether they live in app/components/layout/ or /page/.
-	components: [
-		{ path: '~/components', pathPrefix: false },
-	],
+	content: {
+		build: {
+			markdown: {
+				toc: {
+					searchDepth: 1,
+				},
+			},
+		},
+	},
 
-	// i18n — NL default, EN secundair
 	i18n: {
 		defaultLocale: 'nl',
 		locales: [
@@ -31,49 +37,22 @@ export default defineNuxtConfig({
 		detectBrowserLanguage: false,
 	},
 
-	// Iconen lokaal gebundeld; nooit runtime-call naar Iconify CDN
-	icon: {
-		serverBundle: 'local',
-		customCollections: [
-			{ prefix: 'kh', dir: './app/components/icons' },
-		],
+	experimental: {
+		asyncContext: true,
 	},
 
-	// Nuxt Content — collection-config zit in content.config.ts
-	content: {
-		build: {
-			markdown: {
-				toc: { depth: 3, searchDepth: 3 },
-				highlight: {
-					theme: { default: 'github-light', dark: 'github-dark' },
-				},
-			},
+	compatibilityDate: '2024-07-11',
+
+	nitro: {
+		prerender: {
+			routes: [
+				'/',
+			],
+			crawlLinks: true,
+			autoSubfolderIndex: false,
 		},
 	},
 
-	// PWA — registreer alvast, configuratie verfijnen we in Phase 5
-	pwa: {
-		registerType: 'autoUpdate',
-		manifest: {
-			name: '1000x',
-			short_name: '1000x',
-			lang: 'nl',
-			theme_color: '#0a0a0a',
-		},
-		workbox: {
-			globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
-		},
-	},
-
-	// ESLint module — laat antfu de stylistische source-of-truth zijn
-	eslint: {
-		config: {
-			standalone: false,
-			stylistic: false,
-		},
-	},
-
-	// Niet voor publiek of zoekmachines — zie spec feature 18
 	routeRules: {
 		'/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
 	},
@@ -84,5 +63,45 @@ export default defineNuxtConfig({
 				{ name: 'robots', content: 'noindex, nofollow' },
 			],
 		},
+	},
+
+	eslint: {
+		config: {
+			standalone: false,
+		},
+	},
+
+	icon: {
+		provider: 'iconify',
+	},
+
+	llms: {
+		domain: 'https://1000x.local/',
+		title: '1000x',
+		description: 'Bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert.',
+		full: {
+			title: '1000x — Full Documentation',
+			description: 'Volledige documentatie voor het 1000x second-brain.',
+		},
+		sections: [
+			{
+				title: 'Getting Started',
+				contentCollection: 'docs',
+				contentFilters: [
+					{ field: 'path', operator: 'LIKE', value: '/getting-started%' },
+				],
+			},
+			{
+				title: 'Essentials',
+				contentCollection: 'docs',
+				contentFilters: [
+					{ field: 'path', operator: 'LIKE', value: '/essentials%' },
+				],
+			},
+		],
+	},
+
+	mcp: {
+		name: '1000x',
 	},
 })

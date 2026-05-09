@@ -2,50 +2,5 @@
 	"app": {
 		"title": "1000x",
 		"loading": "Laden..."
-	},
-	"header": {
-		"search": "Zoeken",
-		"ai": "AI assistent",
-		"language": "Taal",
-		"theme": "Thema",
-		"settings": "Instellingen"
-	},
-	"nav": {
-		"the_lab": "The Lab",
-		"syntax": "Syntax",
-		"kitt": "Kitt",
-		"vuln": "Vuln",
-		"xpl01ts": "Xpl01ts",
-		"knowledge_base": "Knowledge Base"
-	},
-	"sidebar": {
-		"new_chapter": "+ nieuw hoofdstuk",
-		"new_page": "+ nieuwe pagina",
-		"rename": "Hernoemen",
-		"delete": "Verwijderen"
-	},
-	"panel": {
-		"toc": "Inhoudsopgave",
-		"editor": "Code editor",
-		"cards": "Cards",
-		"comments": "Reacties"
-	},
-	"page": {
-		"changelog": "Wijzigingen",
-		"prev": "Vorige",
-		"next": "Volgende",
-		"view": "Bekijken",
-		"edit": "Bewerken",
-		"copy": "Kopieer",
-		"copy_markdown": "Kopieer als markdown",
-		"open_claude": "Open in Claude",
-		"open_chatgpt": "Open in ChatGPT",
-		"view_markdown": "Bekijk als markdown",
-		"tab_content": "Inhoud",
-		"tab_examples": "Voorbeelden",
-		"tab_exercises": "Oefeningen",
-		"tab_notes": "Notities",
-		"tab_cheatsheet": "Cheatsheet",
-		"tab_faq": "FAQ"
 	}
 }
