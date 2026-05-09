@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add *)",
+      "Bash(pnpm postinstall *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm lint:fix)",
+      "Bash(pnpm typecheck *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Read(//tmp/**)",
+      "Bash(pnpm dev *)",
+      "Bash(curl -sS -o /tmp/page.html -w \"HTTP=%{http_code} bytes=%{size_download}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -sS -o /tmp/page2.html -w \"HTTP=%{http_code} bytes=%{size_download}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -sS http://localhost:3000/ -o /tmp/p3.html)",
+      "Bash(xargs -n1 basename)",
+      "Bash(git clean *)",
+      "Bash(git ls-tree *)",
+      "Bash(git reset *)",
+      "Bash(mkdir -p /home/skkylimits/HELL/1000x/CDD)",
+      "Bash(cp /mnt/c/Users/MBR/Downloads/files/* /home/skkylimits/HELL/1000x/CDD/)",
+      "Bash(curl -sS -o /tmp/index.html -w \"HTTP %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -sS -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -sS http://localhost:3000/)",
+      "Bash(curl -sS http://localhost:3000/ -o /tmp/idx2.html)",
+      "Bash(curl -sS http://localhost:3000/ -o /tmp/idx3.html -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/ -o /dev/null -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(:)",
+      "Bash(pnpm run *)",
+      "Bash(git checkout *)",
+      "Bash(pnpm ls *)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm test:e2e *)"
+    ]
+  }
+}
