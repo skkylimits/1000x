@@ -2,7 +2,7 @@
 
 ## Summary
 
-Deze customization voegt content-tabs binnen markdown-pagina's toe; de Nuxt UI docs-template levert deze niet als gemakkelijk hergebruikbaar MDC-block. Lange pagina's kunnen daarmee gecondenseerd worden zonder de file op te splitsen, en de tabs vormen de basis voor de tab-bewuste smart ToC (zie Smart ToC, customization 05) en de "+ nieuwe tab"-affordance uit In-app content management (feature 11). Voor lezers die binnen één pagina tussen onderwerpen willen schakelen zonder te navigeren, en voor auteurs die hun content gestructureerd willen aanbieden.
+Deze customization voegt content-tabs binnen markdown-pagina's toe; de Nuxt UI docs-template levert deze niet als gemakkelijk hergebruikbaar MDC-block. Lange pagina's kunnen daarmee gecondenseerd worden zonder de file op te splitsen, en de tabs vormen de basis voor de tab-bewuste smart ToC (zie Smart ToC, customization 07) en de "+ nieuwe tab"-affordance uit In-app content management (feature 11). Voor lezers die binnen één pagina tussen onderwerpen willen schakelen zonder te navigeren, en voor auteurs die hun content gestructureerd willen aanbieden.
 
 ## Goals
 
@@ -14,7 +14,7 @@ Deze customization voegt content-tabs binnen markdown-pagina's toe; de Nuxt UI d
 ## Requirements
 
 - Een markdown-pagina kan content-tabs bevatten als MDC-block; iedere tab heeft een eigen titel, optioneel icon, en eigen H2–H4-koppen
-- De ToC (zie Smart ToC, customization 05) reflecteert alleen de koppen van de actief geselecteerde tab; tab-switch herrendert de ToC
+- De ToC (zie Smart ToC, customization 07) reflecteert alleen de koppen van de actief geselecteerde tab; tab-switch herrendert de ToC
 - Anchor-links binnen een pagina springen alleen naar koppen binnen de actieve tab — een ToC-link verwijst nooit naar verborgen content
 - De gekozen tab wordt bewaard in een querystring zodat een tab-specifieke URL deelbaar is
 - De laatst gekozen tab per pagina wordt onthouden als gebruiker-voorkeur (zie Settings, feature 12); bij terugkeer is die de actieve tab

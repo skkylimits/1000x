@@ -25,19 +25,22 @@ Geordend op afhankelijkheden — wat eerst moet staan voordat het volgende zinvo
 |---|---|---|---|
 | 01 | `01-branding/SPEC.md` | **Optioneel** | Fijn-tuning na foundation: red-shade, logo-spacing, favicon, OG image |
 | 02 | `02-sidebar-replacement/SPEC.md` | **Core** — eerst doen | Auto-sidebar vervangen door scope-bound versie. Tree-bron voor de rest |
-| 03 | `03-layout-chrome/SPEC.md` | **Groot** | Header met dropdowns + sub-header level-bar + breadcrumb + action bar + sliding right panel skeleton |
-| 04 | `04-content-tabs/SPEC.md` | Voor 05 | Markdown content-tabs binnen pagina's. Bron-data voor tab-bewuste smart ToC |
-| 05 | `05-smart-toc/SPEC.md` | Bovenop 03 + 04 | Variant-bewuste, tab-bewuste, scroll-driven ToC in het right panel uit 03 |
-| 06 | `06-page-bottom/SPEC.md` | Bovenop 02 | Changelog timeline + Prev/Next kaarten onder de content |
-| 07 | `07-search-scope-filter/SPEC.md` | Geïsoleerd | Scope-toggle in de search palette: huidige sectie of alles |
+| 03 | `03-header/SPEC.md` | Bovenop 02 | Logo + hoofdmenu met dropdowns + vijf actie-knoppen rechts |
+| 04 | `04-variant-tabs/SPEC.md` | Bovenop 02 | Sub-header met variant-tabs, overflow-collapse, querystring-sync |
+| 05 | `05-page-chrome/SPEC.md` | Bovenop 02 | Breadcrumb + pagina-actiebalk + rechter-panel skelet als container |
+| 06 | `06-content-tabs/SPEC.md` | Voor 07 | Markdown content-tabs binnen pagina's. Bron-data voor tab-bewuste smart ToC |
+| 07 | `07-smart-toc/SPEC.md` | Bovenop 05 + 06 | Variant-bewuste, tab-bewuste, scroll-driven ToC in het rechter panel |
+| 08 | `08-page-bottom/SPEC.md` | Bovenop 02 | Changelog timeline + Prev/Next kaarten onder de content |
+| 09 | `09-search-scope-filter/SPEC.md` | Geïsoleerd | Scope-toggle in de search palette: huidige sectie of alles |
 
 **Waarom deze volgorde:**
 
-- **02 eerst** want sidebar = tree-bron. Header-dropdowns, prev/next, ToC-variants leunen er allemaal op
-- **03 daarna** want die levert de visuele containers waar 05 en 06 hun content in plaatsen
-- **04 voor 05** want de smart ToC is tab-bewust — content-tabs moeten bestaan voordat de ToC daarop kan reageren, anders bouw je hem twee keer
-- **05 en 06 parallel mogelijk** als 02, 03 en 04 staan — geen overlap, raken verschillende delen
-- **07 wanneer je wil** — geïsoleerd, kan eerder of later
+- **02 eerst** want sidebar = tree-bron. Header-dropdowns, prev/next, ToC-variants, breadcrumb leunen er allemaal op
+- **03 / 04 / 05 daarna** — chrome-lagen die het visuele skelet leveren waar latere customizations hun inhoud in plaatsen. Onderling onafhankelijk dus parallelliseerbaar als 02 staat
+- **06 voor 07** want de smart ToC is tab-bewust — content-tabs moeten bestaan voordat de ToC daarop kan reageren, anders bouw je hem twee keer
+- **07 vereist 05 + 06** — leeft in het rechter-panel-skelet (uit 05) en moet tab-bewust zijn (uit 06)
+- **08 parallel mogelijk** zodra 02 staat — raakt alleen de tree, niet het chrome
+- **09 wanneer je wil** — geïsoleerd, kan eerder of later
 
 **01-branding optioneel:**
 
