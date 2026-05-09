@@ -30,15 +30,15 @@ Refactor-kost van een data-source wordt **één file aanraken**, niet N. Wanneer
 
 | Domein | Entry-point | Onderliggende bron | Geïntroduceerd in |
 |---|---|---|---|
-| Navigation tree | `useNavTree()` | `queryCollection('docs')` | Sidebar replacement Step 1 |
-| Current scope | `useCurrentScope()` | `useNavTree` + `useRoute` | Sidebar replacement Step 1 |
-| Breadcrumb | `useBreadcrumb()` | `useNavTree` + `useRoute` | Sidebar replacement Step 1 |
-| Prev/next | `usePrevNext()` | `useNavTree` + `useRoute` | Sidebar replacement Step 1 |
-| UI-state / settings | `settingsStore` | `window.localStorage` | Sidebar replacement Step 3 |
-| Sidebar collapse | `useSidebarCollapse()` | `settingsStore` | Sidebar replacement Step 3 |
-| Drafts | `useDrafts()` (TBD) | `localStorage` → IndexedDB | Feature 10 |
-| Content mutations | Pinia `useNavStore` (TBD) | overlay-storage adapter | Feature 11 |
-| AI context | `useAiContext()` (TBD) | server-route + cache | Feature 19 |
+| Navigation tree | `useNavTree()` | `queryCollection('docs')` | Section sidebar Step 1 |
+| Current scope | `useCurrentScope()` | `useNavTree` + `useRoute` | Section sidebar Step 1 |
+| Breadcrumb | `useBreadcrumb()` | `useNavTree` + `useRoute` | Section sidebar Step 1 |
+| Prev/next | `usePrevNext()` | `useNavTree` + `useRoute` | Section sidebar Step 1 |
+| UI-state / settings | `settingsStore` | `window.localStorage` | Section sidebar Step 3 |
+| Sidebar collapse | `useSidebarCollapse()` | `settingsStore` | Section sidebar Step 3 |
+| Drafts | `useDrafts()` (TBD) | `localStorage` → IndexedDB | Feature 01 in 03-features |
+| Content mutations | Pinia `useNavStore` (TBD) | overlay-storage adapter | Feature 02 in 03-features |
+| AI context | `useAiContext()` (TBD) | server-route + cache | Feature 10 in 03-features |
 
 Iedere row in deze tabel heeft de regel: **niemand belt de derde kolom direct aan, alleen via de tweede.**
 
@@ -68,7 +68,7 @@ Een derivation zoals "vind de scope-node voor deze route" of "platte lijst van p
 ### Waarom
 
 - **Testbaarheid**: Vitest kan ze direct testen zonder JSDOM, zonder `@nuxt/test-utils`, zonder Nuxt-runtime
-- **Swap-baarheid**: wanneer we van composable naar Pinia migreren bij feature 11, blijft de logica hetzelfde — alleen de wrapper verandert
+- **Swap-baarheid**: wanneer we van composable naar Pinia migreren bij feature 02 in 03-features, blijft de logica hetzelfde — alleen de wrapper verandert
 - **Begrijpelijkheid**: bug in een prev/next-volgorde? Eén pure functie inspecteren, niet een keten van reactive composables
 
 ### Concreet — huidige pure utilities
@@ -98,27 +98,27 @@ Plus de types: `NavNode`, `NavTree`, `NavOverlay`, `ContentPageLike`.
 
 ## Pinia-migratiepath
 
-**Pinia komt binnen bij feature 11 (In-app content management), niet eerder. Bij introductie blijven alle consumers ongewijzigd — `useNavTree()` wordt een Pinia getter-wrapper.**
+**Pinia komt binnen bij feature 02 in 03-features (In-app content management), niet eerder. Bij introductie blijven alle consumers ongewijzigd — `useNavTree()` wordt een Pinia getter-wrapper.**
 
 ### Tijdlijn
 
 | Fase | Wat de state-laag doet | Wat de consumer ziet |
 |---|---|---|
-| **Nu — sidebar replacement t/m feature 10** | `useState('nav-tree', ...)` + `useAsyncData` cache. `settingsStore` voor localStorage. Geen Pinia | `useNavTree()`, `settingsStore`, `useDrafts()` |
-| **Feature 11 — In-app content management** | Pinia `useNavStore` introduceert mutatie-actions (`addChapter`, `renamePage`, …). `useNavTree()` wordt een 5-regel wrapper rond `useNavStore().tree`. Overlay-storage adapter | Consumers van `useNavTree()` blijven ongewijzigd |
-| **Feature 12 — Settings** | Pinia `useSettingsStore` consumeert dezelfde `settingsStore`-interface. Export/import-flow | Iedere `settingsStore.get/set/remove` blijft werken |
+| **Nu — section sidebar t/m feature 01 in 03-features** | `useState('nav-tree', ...)` + `useAsyncData` cache. `settingsStore` voor localStorage. Geen Pinia | `useNavTree()`, `settingsStore`, `useDrafts()` |
+| **Feature 02 in 03-features — In-app content management** | Pinia `useNavStore` introduceert mutatie-actions (`addChapter`, `renamePage`, …). `useNavTree()` wordt een 5-regel wrapper rond `useNavStore().tree`. Overlay-storage adapter | Consumers van `useNavTree()` blijven ongewijzigd |
+| **Feature 03 in 03-features — Settings** | Pinia `useSettingsStore` consumeert dezelfde `settingsStore`-interface. Export/import-flow | Iedere `settingsStore.get/set/remove` blijft werken |
 | **Phase 2 — IndexedDB** | Adapter achter `settingsStore` en de overlay-storage swappen naar IndexedDB. Pinia-store-shape blijft hetzelfde | Consumers ongewijzigd |
 | **Phase 3 — IAM + backend save** | Pinia stores krijgen actions die naar de backend schrijven. Lokale state blijft optimistisch | Consumers ongewijzigd |
 
-### Waarom Pinia, en waarom pas bij feature 11
+### Waarom Pinia, en waarom pas bij feature 02 in 03-features
 
 - **Voor read-only data is Pinia overkill** — `useState` + `useAsyncData` doet hetzelfde met minder boilerplate
-- **Bij feature 11 ontstaat write-side state** — mutaties met cross-feature invarianten (settings export ↔ overlay state ↔ drafts). Dat is precies wat Pinia goed kan: expliciete actions, devtools-inspectie, time-travel debugging
-- **Eén keer Pinia introduceren maakt extra stores goedkoop** — feature 11, 12, 19 mogen allemaal eigen stores krijgen zonder hernieuwde architectuur-discussie
+- **Bij feature 02 in 03-features ontstaat write-side state** — mutaties met cross-feature invarianten (settings export ↔ overlay state ↔ drafts). Dat is precies wat Pinia goed kan: expliciete actions, devtools-inspectie, time-travel debugging
+- **Eén keer Pinia introduceren maakt extra stores goedkoop** — features 02 (content management), 03 (settings) en 10 (AI assistent) in `03-features/` mogen allemaal eigen stores krijgen zonder hernieuwde architectuur-discussie
 
 ### Wat dit voor Step 1 betekent
 
-`useNavTree()` wordt nu geschreven als pure composable. Bij feature 11 wordt 'ie geherprogrammeerd als getter-wrapper:
+`useNavTree()` wordt nu geschreven als pure composable. Bij feature 02 in 03-features wordt 'ie geherprogrammeerd als getter-wrapper:
 
 ```ts
 // Nu (Step 1) — composable met useAsyncData
@@ -130,7 +130,7 @@ export async function useNavTree() {
 	return data
 }
 
-// Bij feature 11 — wrapper rond Pinia
+// Bij feature 02 (content management) — wrapper rond Pinia
 export function useNavTree() {
 	const store = useNavStore()
 	return computed(() => store.tree)
@@ -229,7 +229,7 @@ Toevoegen wanneer iemand er voor het eerst tegenaan loopt — niet preemptive.
 - **`localStorage.setItem('ui:foo', ...)` in een composable** — gebruik `settingsStore.set('foo', ...)`
 - **Twee composables die hetzelfde domein bedienen** (`useNav` naast `useNavTree`) — één moet weg
 - **Een derivation in een component schrijven die ook in een utility hoort** (`pages.filter(...).sort(...)`) — verplaats naar `app/utils/<domain>.ts`
-- **Pinia toevoegen "voor de toekomst"** vóór feature 11 een echte mutatie-flow nodig heeft
+- **Pinia toevoegen "voor de toekomst"** vóór feature 02 in 03-features een echte mutatie-flow nodig heeft
 - **VueUse als wrapper rond een 5-regel localStorage-helper** — `settingsStore` is voldoende
 - **Een generieke `<Tree>`-component** of swappable storage-adapter zonder een tweede concreet gebruik
 - **Reactiviteit (`computed`, `watch`) toevoegen in `app/utils/*`** — die files zijn pure logic
@@ -241,7 +241,7 @@ Toevoegen wanneer iemand er voor het eerst tegenaan loopt — niet preemptive.
 Dit document wordt geüpdatet wanneer:
 
 - Een nieuwe data-source toegevoegd wordt → row in de tabel onder Regel 1
-- Pinia-introductie bij feature 11 → migratie-tijdlijn afvinken, eventueel folder-discipline herstructureren
+- Pinia-introductie bij feature 02 in 03-features → migratie-tijdlijn afvinken, eventueel folder-discipline herstructureren
 - Een uitzondering op Regel 1 of 2 nodig blijkt en gemotiveerd kan worden → uitzondering documenteren mét reden, zodat het geen impliciete drift wordt
 
 Wijzigingen aan dit document gaan via een gewone PR; review-discipline geldt ook hier.
