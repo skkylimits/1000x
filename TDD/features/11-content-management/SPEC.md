@@ -22,6 +22,10 @@ Nieuwe hoofdstukken, pagina's, varianten en content-tabs aanmaken vanuit de UI z
 - Een nieuwe content-tab wordt automatisch in het markdown-bestand ingevoegd op de juiste plek
 - Rechtermuisknop op een bestaand item (chapter, page, variant, tab) opent een context-menu met minimaal _rename_ en _delete_
 - Eerste release: alle structuur-mutaties leven als overlay in lokale browser-opslag onder een sleutel die de taal bevat (zie Internationalisatie, feature 4); de gerenderde sidebar mergt de echte content-tree met deze overlay
+- Architectuur-scheiding read/write: de read-side blijft de composable `useNavTree()` uit Section sidebar (feature 2); deze feature introduceert een Pinia store voor de write-side. Geen herschrijven van bestaande nav-surfaces — die lezen onveranderd uit de composable
+- Mutatie-acties (`addChapter`, `addPage`, `addVariant`, `addContentTab`, `rename`, `delete`) leven als store-actions; iedere actie schrijft atomair naar de overlay-storage en triggert een recompute van `useNavTree()` zodat alle nav-surfaces direct meebewegen
+- De tree-build is een pure functie `buildTree(rawContent, overlay)`; deze feature vult de `overlay`-parameter, die in feature 2 nog leeg is. Tijdens SSG blijft `overlay` leeg (privé-items lekken niet in de gerenderde HTML); na hydratie leest de store de overlay uit browser-opslag en geeft 'm door aan de tree-build
+- De store is de eerste plek in de app waar Pinia binnenkomt; eerdere features hebben geen state-manager nodig en blijven op composables + `useState` werken
 - Lokaal aangemaakte items zijn alleen voor die browser/sessie zichtbaar en niet voor anderen
 - Lokale tree-mutaties worden meegenomen in de export/import via Settings (zie Settings, feature 12 en View / Edit-toggle met lokale drafts, feature 10)
 - Latere fase (drag-and-drop herordenen) past binnen dezelfde overlay-structuur zonder UI-breuk
