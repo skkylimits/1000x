@@ -2,43 +2,43 @@
 import type { NuxtError } from '#app'
 
 defineProps<{
-  error: NuxtError
+	error: NuxtError
 }>()
 
 const { t, locale } = useI18n()
 
 useHead({
-  htmlAttrs: {
-    lang: locale
-  }
+	htmlAttrs: {
+		lang: locale,
+	},
 })
 
 useSeoMeta({
-  title: () => t('page.notFound.title'),
-  description: () => t('page.notFound.description')
+	title: () => t('page.notFound.title'),
+	description: () => t('page.notFound.description'),
 })
 
 const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))
 const { data: files } = useLazyAsyncData('search', () => queryCollectionSearchSections('docs'), {
-  server: false
+	server: false,
 })
 
 provide('navigation', navigation)
 </script>
 
 <template>
-  <UApp>
-    <AppHeader />
+	<UApp>
+		<AppHeader />
 
-    <UError :error="error" />
+		<UError :error="error" />
 
-    <AppFooter />
+		<AppFooter />
 
-    <ClientOnly>
-      <LazyUContentSearch
-        :files="files"
-        :navigation="navigation"
-      />
-    </ClientOnly>
-  </UApp>
+		<ClientOnly>
+			<LazyUContentSearch
+				:files="files"
+				:navigation="navigation"
+			/>
+		</ClientOnly>
+	</UApp>
 </template>

@@ -1,22 +1,22 @@
 {
-  "app": {
-    "title": "1000x",
-    "loading": "Laden..."
-  },
-  "page": {
-    "notFound": {
-      "title": "Pagina niet gevonden",
-      "description": "De gevraagde pagina bestaat niet."
-    },
-    "actions": {
-      "copyPage": "Kopieer pagina",
-      "copyMarkdownLink": "Kopieer markdown-link",
-      "viewAsMarkdown": "Bekijk als markdown",
-      "openInChatGPT": "Open in ChatGPT",
-      "openInClaude": "Open in Claude",
-      "openCopyMenu": "Open kopieer-menu",
-      "copiedToClipboard": "Gekopieerd naar klembord",
-      "editThisPage": "Bewerk deze pagina"
-    }
-  }
+	"app": {
+		"title": "1000x",
+		"loading": "Laden..."
+	},
+	"page": {
+		"notFound": {
+			"title": "Pagina niet gevonden",
+			"description": "De gevraagde pagina bestaat niet."
+		},
+		"actions": {
+			"copyPage": "Kopieer pagina",
+			"copyMarkdownLink": "Kopieer markdown-link",
+			"viewAsMarkdown": "Bekijk als markdown",
+			"openInChatGPT": "Open in ChatGPT",
+			"openInClaude": "Open in Claude",
+			"openCopyMenu": "Open kopieer-menu",
+			"copiedToClipboard": "Gekopieerd naar klembord",
+			"editThisPage": "Bewerk deze pagina"
+		}
+	}
 }

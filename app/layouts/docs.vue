@@ -5,18 +5,18 @@ const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 </script>
 
 <template>
-  <UContainer>
-    <UPage>
-      <template #left>
-        <UPageAside>
-          <UContentNavigation
-            highlight
-            :navigation="navigation"
-          />
-        </UPageAside>
-      </template>
+	<UContainer>
+		<UPage>
+			<template #left>
+				<UPageAside>
+					<UContentNavigation
+						highlight
+						:navigation="navigation"
+					/>
+				</UPageAside>
+			</template>
 
-      <slot />
-    </UPage>
-  </UContainer>
+			<slot />
+		</UPage>
+	</UContainer>
 </template>
