@@ -7,13 +7,13 @@ defineProps<{
 
 useHead({
   htmlAttrs: {
-    lang: 'en'
+    lang: 'nl'
   }
 })
 
 useSeoMeta({
-  title: 'Page not found',
-  description: 'We are sorry but this page could not be found.'
+  title: 'Pagina niet gevonden',
+  description: 'De gevraagde pagina bestaat niet.'
 })
 
 const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))

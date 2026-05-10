@@ -14,6 +14,14 @@ export default defineNuxtConfig({
     enabled: true
   },
 
+  app: {
+    head: {
+      meta: [
+        { name: 'robots', content: 'noindex, nofollow' }
+      ]
+    }
+  },
+
   css: ['~/assets/css/main.css'],
 
   content: {
@@ -23,6 +31,12 @@ export default defineNuxtConfig({
           searchDepth: 1
         }
       }
+    }
+  },
+
+  routeRules: {
+    '/**': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow' }
     }
   },
 
@@ -56,32 +70,17 @@ export default defineNuxtConfig({
   },
 
   llms: {
-    domain: 'https://docs-template.nuxt.dev/',
-    title: 'Nuxt Docs Template',
-    description: 'A template for building documentation with Nuxt UI and Nuxt Content.',
+    domain: 'https://1000x.example.com/',
+    title: '1000x',
+    description: 'Bedrijfsbreed second-brain — documentatiesite, wiki en interactief leersysteem.',
     full: {
-      title: 'Nuxt Docs Template - Full Documentation',
-      description: 'This is the full documentation for the Nuxt Docs Template.'
+      title: '1000x — Full Documentation',
+      description: 'Volledige documentatie voor het 1000x second-brain platform.'
     },
-    sections: [
-      {
-        title: 'Getting Started',
-        contentCollection: 'docs',
-        contentFilters: [
-          { field: 'path', operator: 'LIKE', value: '/getting-started%' }
-        ]
-      },
-      {
-        title: 'Essentials',
-        contentCollection: 'docs',
-        contentFilters: [
-          { field: 'path', operator: 'LIKE', value: '/essentials%' }
-        ]
-      }
-    ]
+    sections: []
   },
 
   mcp: {
-    name: 'Docs template'
+    name: '1000x'
   }
 })
