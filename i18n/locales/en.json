@@ -3,6 +3,12 @@
 		"title": "1000x",
 		"loading": "Loading..."
 	},
+	"header": {
+		"localeToggle": "Switch language"
+	},
+	"toc": {
+		"title": "On this page"
+	},
 	"page": {
 		"notFound": {
 			"title": "Page not found",

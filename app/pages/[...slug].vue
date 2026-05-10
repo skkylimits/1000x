@@ -87,7 +87,7 @@ const links = computed(() => {
 			#right
 		>
 			<UContentToc
-				:title="toc?.title"
+				:title="t('toc.title')"
 				:links="page.body?.toc?.links"
 			>
 				<template

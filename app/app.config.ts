@@ -2,7 +2,7 @@ export default defineAppConfig({
 	ui: {
 		colors: {
 			primary: 'red',
-			neutral: 'slate',
+			neutral: 'mist',
 		},
 		footer: {
 			slots: {
@@ -32,7 +32,6 @@ export default defineAppConfig({
 		links: [] as Array<{ 'icon': string, 'to': string, 'target'?: string, 'aria-label'?: string }>,
 	},
 	toc: {
-		title: 'Inhoud',
 		bottom: {
 			title: '',
 			edit: '',

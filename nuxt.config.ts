@@ -67,8 +67,8 @@ export default defineNuxtConfig({
 	i18n: {
 		defaultLocale: 'nl',
 		locales: [
-			{ code: 'nl', language: 'nl-NL', file: 'nl.json', name: 'Nederlands' },
-			{ code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
+			{ code: 'nl', language: 'nl-NL', file: 'nl.json', name: 'Nederlands', flag: 'circle-flags:nl' },
+			{ code: 'en', language: 'en-US', file: 'en.json', name: 'English', flag: 'circle-flags:gb' },
 		],
 		strategy: 'no_prefix',
 		detectBrowserLanguage: false,

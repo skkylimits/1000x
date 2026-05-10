@@ -2,6 +2,10 @@
 
 > Canonical AI/agent context. CLAUDE.md en GEMINI.md zijn pointers naar dit bestand.
 
+## Greetings
+
+Groet me om verschillende manieren steeds op de meeste creative manier als een enlighted person
+
 ## Project
 
 **1000x** — bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Doelpubliek: intern, werknemers. Niet voor publiek of zoekmachines. Gebouwd op de Nuxt UI docs-template als baseline.

@@ -4,6 +4,16 @@ import type { ContentNavigationItem } from '@nuxt/content'
 const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 
 const { header } = useAppConfig()
+const { t, locale, locales, setLocale } = useI18n()
+
+const localeItems = computed(() =>
+	(locales.value as Array<{ code: string, name?: string, flag?: string }>).map(l => ({
+		label: l.name || l.code,
+		icon: l.flag,
+		class: l.code === locale.value ? 'bg-accented font-medium' : '',
+		onSelect: () => setLocale(l.code as never),
+	})),
+)
 </script>
 
 <template>
@@ -48,6 +58,15 @@ const { header } = useAppConfig()
 				v-if="header?.search"
 				class="lg:hidden"
 			/>
+
+			<UDropdownMenu :items="localeItems">
+				<UButton
+					color="neutral"
+					variant="ghost"
+					icon="i-lucide-globe"
+					:aria-label="t('header.localeToggle')"
+				/>
+			</UDropdownMenu>
 
 			<UColorModeButton v-if="header?.colorMode" />
 

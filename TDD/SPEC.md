@@ -56,15 +56,14 @@ Voor proces, PR-discipline en de drie soorten werk (foundation / customizations 
 
 > Stage 1 in `FEATURES.md`: éénmalige scaffold-laag. Branding (`01-FOUNDATION/01-branding`) en content-stubs (`01-FOUNDATION/03-content-stubs`) zijn setup-werk en hebben hier geen Core-Feature-entry — zie hun eigen `SPEC.md` voor details. Alleen i18n is een echte user-facing feature.
 
-### 1. Internationalisatie (i18n)
+### 1. Internationalisatie (UI)
 
 → detail-spec: [`01-FOUNDATION/02-i18n/SPEC.md`](./01-FOUNDATION/02-i18n/SPEC.md)
 
 - Module: `@nuxtjs/i18n`
-- Standaardtaal **Nederlands**, secundair **Engels**
-- Alle UI-strings via translation files
-- Markdown content per taal: `page.nl.md`, `page.en.md`. Levels en tabs zijn folder-/file-based (folders voor levels, sibling-files voor tabs); ieder level- of tab-bestand heeft zijn eigen `.nl.md` / `.en.md`-suffix
-- Localstorage-drafts en lokale tree-mutaties (zie View / Edit-toggle, feature 01 in 03-FEATURES en In-app content management, feature 02 in 03-FEATURES) per taal apart: sleutel bevat `{lang}`
+- Standaardtaal **Nederlands**, secundair **Engels** voor UI-strings
+- Alle UI-strings via translation-files (`i18n/locales/{lang}.json`)
+- Markdown-content blijft in de bron-taal — content-translatie naar andere talen volgt later via een aparte TMS-strategie (zie Content-translatie, feature 11 in 03-FEATURES) zodat de codebase niet overloaded raakt met `<page>.<lang>.md` siblings
 
 ---
 

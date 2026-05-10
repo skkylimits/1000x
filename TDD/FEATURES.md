@@ -19,7 +19,7 @@ Werk-volgorde: foundation eerst en tot het écht klaar is (inclusief content-stu
 | | [SCAFFOLDING.md](./01-FOUNDATION/SCAFFOLDING.md) | Stap-voor-stap setup-bron-van-waarheid (Nuxt UI docs-template clonen, dependencies, configs) |
 | | [FOUNDATION.md](./01-FOUNDATION/FOUNDATION.md) | Initial-scaffold scope en non-goals |
 | 01 | [01-branding](./01-FOUNDATION/01-branding/SPEC.md) | 1000x-logo (rode "1" + default "000x"), accent-kleur, site-name op alle plekken — eerste-pas; fijntuning kan later |
-| 02 | [02-i18n](./01-FOUNDATION/02-i18n/SPEC.md) | NL default + EN secundair via `@nuxtjs/i18n`; UI-strings + content-files per taal |
+| 02 | [02-i18n](./01-FOUNDATION/02-i18n/SPEC.md) | NL default + EN secundair via `@nuxtjs/i18n`; UI-strings vertaalbaar — content-translatie volgt later via TMS (feature 11 in 03-FEATURES) |
 | 03 | [03-content-stubs](./01-FOUNDATION/03-content-stubs/SPEC.md) | Demo-content tree onder `content/` (scope-modes, levels-folders, tabs-files, MDC inline ::tabs, standalone topics, kb-fallback) als testbed voor stage 2 |
 
 ---
@@ -58,6 +58,7 @@ Werk-volgorde: foundation eerst en tot het écht klaar is (inclusief content-stu
 | 08 | [08-pwa-offline](./03-FEATURES/08-pwa-offline/SPEC.md) | Installeerbaar PWA + cache-as-you-go service worker + per-module offline-download |
 | 09 | [09-toegang-private-deployment](./03-FEATURES/09-toegang-private-deployment/SPEC.md) | `noindex`, auth-gate, geen content voor unauthenticated requests |
 | 10 | [10-ai-assistent](./03-FEATURES/10-ai-assistent/SPEC.md) | Slide-panel chatbot met paginacontext, gestreamed via server-route |
+| 11 | [11-content-translatie](./03-FEATURES/11-content-translatie/SPEC.md) | TMS-strategie voor content-translatie naar andere talen — bron-codebase blijft in NL, vertalingen in aparte repo's of TMS-provider |
 
 ---
 
