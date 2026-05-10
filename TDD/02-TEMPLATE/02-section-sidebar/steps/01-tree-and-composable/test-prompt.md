@@ -6,11 +6,11 @@ This task writes the **tests** for the first implementation step of **template c
 
 **Read these documents before starting:**
 
-- `TDD/SPEC.md` — overall product spec; **§ Core Features → 2. Section sidebar** is the conceptual reference for the tree contract and **§ 8. Sub-header met levels** for the levels-folder model
-- `TDD/02-TEMPLATE/02-section-sidebar/SPEC.md` — this customization in detail. **§ Implementation Steps → Step 1** lists the public API and the test cases to cover; **§ Implementation Steps → Step 1 → Tests** is the green-criteria checklist
-- `TDD/02-TEMPLATE/04-levels/SPEC.md` — the levels-folder model (frontmatter contract, AppLevelHeader, no file-suffix-collapse)
+- `TDD/SPEC.md` — overall product spec; **§ Core Features → 2. Section sidebar** is the conceptual reference for the tree contract
+- `TDD/02-TEMPLATE/02-section-sidebar/SPEC.md` — this customization in detail. **§ Implementation Steps → Step 1** lists the public API and the test cases to cover; the **Tests** bullet-list under Step 1 is the green-criteria checklist
+- `TDD/02-TEMPLATE/04-levels/SPEC.md` — the levels-folder model (frontmatter contract, folder-based, no file-suffix-collapse)
 - `TDD/02-TEMPLATE/05-tabs/SPEC.md` — the tabs-file model (file-based siblings under a tabs-container)
-- `TDD/02-TEMPLATE/02-section-sidebar/steps/01-tree-and-composable/prompt.md` — the implementation prompt for Step 1. The public API contract restated in this test prompt **must match** that document; if there is a discrepancy, the implementation prompt wins and you flag it in your final report
+- `TDD/02-TEMPLATE/02-section-sidebar/steps/01-tree-and-composable/prompt.md` — the implementation prompt for Step 1. The public API contract restated below **must match** that document; if there is a discrepancy, the implementation prompt wins and you flag it in your final report
 - `AGENTS.md` — established conventions
 
 **Workflow context — test-first with a scaffold-stub:**
@@ -23,19 +23,20 @@ When the implementation session runs `prompt.md`, it overwrites the scaffold-stu
 
 ## Task
 
-Write fixture-driven Vitest unit tests for the public API of the data layer that Step 1 will introduce: `buildTree`, `walkScope`, `walkEffectiveScope`, `walkBreadcrumb`, `flattenForPrevNext`, plus the `NavKind` / `NavNode` / `NavTree` / `NavOverlay` / `ContentPageLike` types — all expected to be exported from `app/utils/nav.ts`. Drop a scaffold-stub of that file so the suite is *discoverable* and fails on assertions rather than on import resolution. **No real implementation logic in this task — the function bodies in the stub all throw `not implemented`.**
+Write fixture-driven Vitest unit tests for the public API of the data layer that Step 1 will introduce: `buildTree`, `walkScope`, `walkEffectiveScope`, `walkBreadcrumb`, plus the `NavKind` / `NavNode` / `NavTree` / `NavOverlay` / `ContentPageLike` types — all expected to be exported from `app/utils/nav.ts`. Drop a scaffold-stub of that file so the suite is *discoverable* and fails on assertions rather than on import resolution. **No real implementation logic in this task — the function bodies in the stub all throw `not implemented`.**
 
 **In scope for this task:**
 
-1. Create `app/utils/nav.ts` as a **scaffold-stub**: full type exports (`NavKind`, `NavNode`, `NavTree`, `NavOverlay`, `ContentPageLike`) and five function exports whose bodies are exactly `throw new Error('not implemented: <name>')`
+1. Create `app/utils/nav.ts` as a **scaffold-stub**: full type exports (`NavKind`, `NavNode`, `NavTree`, `NavOverlay`, `ContentPageLike`) and four function exports whose bodies are exactly `throw new Error('not implemented: <name>')`
 2. Create `tests/unit/nav.test.ts` with the test cases listed below, organised in `describe` blocks per resolver
 3. Verify the suite is **red** at the assertion level by running `pnpm test` — every test in the suite should be discovered and fail (most on `not implemented` errors; the icon-validation and flag-conflict tests fail on regex-mismatch or unexpected-throw)
 
 **Out of scope:**
 
 - Installing Vitest, creating `vitest.config.ts`, or modifying `package.json` scripts — already done at the repo level
-- Implementing real logic for any of the five functions in `app/utils/nav.ts` — the implementation session owns that and will overwrite the stub bodies
+- Implementing real logic for any of the four functions — the implementation session owns that and will overwrite the stub bodies
 - Creating any composable, plugin, component, or layout — only the pure-functions stub file
+- `flattenForPrevNext` or `usePrevNext` — prev/next consumes `useNavTree` straks, but the flatten-walk and tests live in customization 10 in 02-TEMPLATE, not here
 - Playwright / E2E tests — those land with later steps under `tests/e2e/`
 - `@nuxt/test-utils` integration — these are pure-function tests with no Nuxt runtime needed
 - Snapshot tests — the SPEC's expectations are deterministic and small enough for explicit assertions
@@ -48,7 +49,7 @@ Write fixture-driven Vitest unit tests for the public API of the data layer that
 - `tests/unit/` exists (currently with only a `.gitkeep` placeholder) — drop your test file there
 - `tests/e2e/` exists (Playwright home for later steps) — leave it alone in this task
 - `node_modules/` is installed; no `pnpm install` step needed
-- The current branch is `01-template`. Step 1 implementation has **not** been merged
+- Step 1 implementation has **not** been merged
 
 Run before starting:
 
@@ -67,7 +68,7 @@ app/
 
 tests/
 └── unit/
-    └── nav.test.ts        ← NEW: fixture-driven unit tests for buildTree, walkScope, walkEffectiveScope, walkBreadcrumb, flattenForPrevNext
+    └── nav.test.ts        ← NEW: fixture-driven unit tests for buildTree, walkScope, walkEffectiveScope, walkBreadcrumb
 ```
 
 Do **not** create composables, do **not** create components, do **not** modify `content.config.ts`, do **not** modify `app/layouts/docs.vue` or any other production code, do **not** modify `package.json`, `vitest.config.ts`, `playwright.config.ts`, or `.gitignore`. The `git status` after this task should list **only** the two new files above.
@@ -130,7 +131,6 @@ export function buildTree(pages: ContentPageLike[], overlay?: NavOverlay): NavTr
 export function walkScope(routePath: string, lookup: Map<string, NavNode>): NavNode | null
 export function walkEffectiveScope(routePath: string, lookup: Map<string, NavNode>): NavNode | null
 export function walkBreadcrumb(routePath: string, lookup: Map<string, NavNode>): NavNode[]
-export function flattenForPrevNext(tree: NavTree): NavNode[]
 ```
 
 Behaviour rules — the tests assert these directly:
@@ -142,7 +142,6 @@ Behaviour rules — the tests assert these directly:
 - `walkScope` walks the parent path segments from longest to shortest; returns the first node whose `scope` is `'self'` or `'children'`; falls back to the top-level ancestor; returns `null` if `routePath` is not in the lookup
 - `walkEffectiveScope` runs `walkScope`; if the resolved scope is a `levels-container`, it returns the active `level` descendant on the path (or the levels-container itself when the route is the container's own `index.md`)
 - `walkBreadcrumb` returns `[root, ..., current]` for a known path, `[]` for unknown
-- `flattenForPrevNext` walks the tree in nav-array order. Emits `page`, `level` (overview) and `tab` nodes; skips `chapter`, `levels-container`, `tabs-container`. Pure scope-labels (directory nodes that exist only as containers) are excluded
 
 If anything in this contract is ambiguous, prefer the wording in `prompt.md` over this restatement — the implementation prompt is canonical.
 
@@ -209,10 +208,6 @@ export function walkEffectiveScope(_routePath: string, _lookup: Map<string, NavN
 export function walkBreadcrumb(_routePath: string, _lookup: Map<string, NavNode>): NavNode[] {
 	throw new Error('not implemented: walkBreadcrumb')
 }
-
-export function flattenForPrevNext(_tree: NavTree): NavNode[] {
-	throw new Error('not implemented: flattenForPrevNext')
-}
 ```
 
 The leading underscore on parameter names suppresses ESLint's unused-args rule without disabling it. Do **not** soften the throws to "return null" or sentinel values — explicit throws are what make the tests fail loudly and uniformly.
@@ -226,7 +221,6 @@ import type { ContentPageLike } from '../../app/utils/nav'
 import { describe, expect, it } from 'vitest'
 import {
 	buildTree,
-	flattenForPrevNext,
 	walkBreadcrumb,
 	walkEffectiveScope,
 	walkScope,
@@ -289,6 +283,11 @@ describe('buildTree — order resolver', () => {
 
 	it('falls back to alphabetical level-slug when levels: true (no array) is set', () => {
 		// levels-container with levels: true and folders senior/mid/junior yields [junior, mid, senior]
+	})
+
+	it('respects nav over the tabs: [...] array on a tabs-container', () => {
+		// tabs-container with nav: [cli, postcss, vite] and tabs: [vite, postcss, cli]
+		// yields children in [cli, postcss, vite]
 	})
 })
 
@@ -384,29 +383,6 @@ describe('walkBreadcrumb', () => {
 		// walkBreadcrumb('/nope', lookup) → []
 	})
 })
-
-describe('flattenForPrevNext', () => {
-	it('respects the nav-array order across the flattened sequence', () => {
-		// JS nav: [b, a] yields b before a in the flat list
-	})
-
-	it('walks levels in nested order, staying within a level until exhausted', () => {
-		// JS levels-container with junior/mid/senior; junior has 2 pages, mid has 1
-		// flat list yields: junior overview, junior/page1, junior/page2, mid overview, mid/page1, ...
-	})
-
-	it('does not emit the levels-container node itself', () => {
-		// the JS levels-container path is absent from flattenForPrevNext output
-	})
-
-	it('emits a tabs-container once and does not emit its tab children', () => {
-		// installation tabs-container appears once; vite/postcss/cli tabs are NOT in the flat list
-	})
-
-	it('excludes pure scope-label directories that have no own content', () => {
-		// a /modules scope with chapters as children, where /modules itself is just a label, is not in the flat list
-	})
-})
 ```
 
 Fill in each `it` body with explicit fixtures and assertions. Use small tree shapes — three to seven nodes per test is plenty. Do **not** share mutable state across tests; build fresh fixtures inside each `it` (or inside a `beforeEach` if a fixture is reused twice within one `describe`).
@@ -432,7 +408,8 @@ Be careful with the `_id` / `stem` fields when constructing fixtures: directory-
 
 ## What NOT to do
 
-- ❌ **Do not** implement real logic in `app/utils/nav.ts` — the five function bodies stay as `throw new Error('not implemented: <name>')`. The implementation session owns the real algorithms
+- ❌ **Do not** implement real logic in `app/utils/nav.ts` — the four function bodies stay as `throw new Error('not implemented: <name>')`. The implementation session owns the real algorithms
+- ❌ **Do not** add `flattenForPrevNext` or any prev/next walker — that lives in customization 10 in 02-TEMPLATE, not here
 - ❌ **Do not** create any composable, plugin, component, or layout — only the scaffold-stub `app/utils/nav.ts`
 - ❌ **Do not** modify `content.config.ts`, `app/app.vue`, `app/layouts/docs.vue`, `package.json`, `vitest.config.ts`, `playwright.config.ts`, `.gitignore`, or any other repo-level file
 - ❌ **Do not** install dependencies; the toolchain is already in place

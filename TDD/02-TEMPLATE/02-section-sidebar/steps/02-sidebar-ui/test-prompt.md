@@ -7,13 +7,15 @@ This task writes the **tests** for the second implementation step of **template 
 **Read these documents before starting:**
 
 - `TDD/SPEC.md` — overall product spec; **§ Core Features → 2. Section sidebar** is the conceptual reference for the visible behaviour
-- `TDD/02-TEMPLATE/02-section-sidebar/SPEC.md` — this customization in detail. **§ Implementation Steps → Step 2** lists the component contract; **§ Implementation Steps → Step 2 → Tests** is the green-criteria checklist; **§ Constraints** lists what stays out
+- `TDD/02-TEMPLATE/02-section-sidebar/SPEC.md` — this customization in detail. **§ Implementation Steps → Step 2** lists the component contract; the **Tests** bullet-list under Step 2 is the green-criteria checklist; **§ Constraints** lists what stays out
+- `TDD/02-TEMPLATE/04-levels/SPEC.md` — the levels-folder model (the sidebar must NOT render levels-containers as entries; AppLevelHeader handles that chrome)
+- `TDD/02-TEMPLATE/05-tabs/SPEC.md` — the tabs-file model (tabs-containers render as a single leaf in the sidebar; tab-children live only in the in-content TabBar)
 - `TDD/02-TEMPLATE/02-section-sidebar/steps/02-sidebar-ui/prompt.md` — the implementation prompt for Step 2. The component contract and DOM shape this test prompt asserts on **must match** that document; if there is a discrepancy, the implementation prompt wins and you flag it in your final report
 - `AGENTS.md` — established conventions
 
 **Workflow context — test-first:**
 
-You write tests against a UI that **does not exist yet**. Step 2 will replace the docs-template's `<UContentNavigation>` with a `<SectionSidebar>` component that consumes `useNavTree()` from Step 1. Until both Step 1 and Step 2 implementations land, the tests fail — either the dev server crashes during boot (`buildTree` throws on missing icons) or the new selectors don't exist. That red state is intentional. Once both steps ship and the demo content has the required frontmatter (see **Demo content prerequisites** below), every test in this suite must turn green without modification. If a test stays red, the implementation deviates from the contract — fix the implementation, not the test.
+You write tests against a UI that **does not exist yet**. Step 2 will replace the docs-template's `<UContentNavigation>` with a `<SectionSidebar>` component that consumes `useNavTree()` and `useEffectiveScope()` from Step 1. Until both Step 1 and Step 2 implementations land, the tests fail — either the dev server crashes during boot (`buildTree` throws on missing icons) or the new selectors don't exist. That red state is intentional. Once both steps ship and the demo content has the required frontmatter (see **Demo content prerequisites** below), every test in this suite must turn green without modification. If a test stays red, the implementation deviates from the contract — fix the implementation, not the test.
 
 **Test infrastructure already exists at the repo root** — Playwright is installed with chromium, `playwright.config.ts` points at `tests/e2e/`, the `pnpm dev` webServer is wired up, and `pnpm test:e2e` runs the suite. You only write the test file.
 
@@ -55,7 +57,7 @@ Document this dependency clearly in your final report so the user knows the gati
 - `package.json` defines `test:e2e` (= `playwright test`)
 - Chromium is downloaded (`~/.cache/ms-playwright/chromium-*`)
 - `tests/e2e/` exists (currently with only a `.gitkeep` placeholder)
-- The current branch is `01-template`. Step 1 and Step 2 implementations have **not** been merged yet
+- Step 1 and Step 2 implementations have **not** been merged yet
 - Demo content lives at `content/{1.getting-started, 2.essentials, 3.ai}` with the routes `/getting-started`, `/getting-started/installation`, `/getting-started/usage`, `/essentials/markdown-syntax`, `/essentials/code-blocks`, `/essentials/prose-components`, `/essentials/images-embeds`, `/ai/mcp`, `/ai/llms`
 
 Before starting, run:
@@ -83,16 +85,18 @@ These DOM-level facts must be true once Step 2 ships. The tests assert on them.
 - The sidebar mounts inside `app/layouts/docs.vue` as `<SectionSidebar />`. There is **no** `<UContentNavigation>` rendered anywhere in `app/`
 - The sidebar root is `<nav>` and is the only `<nav>` rendered inside `<UPageAside>` (the docs-template's left aside slot)
 - The first row inside the `<nav>` is the **scope-label** — a non-button element containing an `<UIcon>` (rendered as an `<svg>` or an iconify-class element) plus the scope title text
-- Chapters render as `<button type="button">` elements with `aria-expanded="true|false"` (Step 2 sets default `true`; Step 3 will hook up persistence). Each chapter button contains an icon, a title, and a chevron icon (`lucide:chevron-right`) that rotates on expand
+- Chapters render as `<button type="button">` elements with `aria-expanded="true|false"`. Each chapter button contains an icon, a title, and a chevron icon (`lucide:chevron-right`) that rotates on expand
 - Page leaves render as `<a>` (via `<NuxtLink>`) with `border-l` styling. The active page also carries `aria-current="page"`
-- Multiple chapters can be expanded simultaneously — clicking one chapter does **not** collapse its siblings
+- Multiple chapters can be expanded simultaneously — clicking one chapter does **not** collapse its siblings (no accordion-mode)
 - Orphan pages (children of the scope without a chapter parent) render in the same indented container as chapter children, with the same per-item border-left active-line treatment
+- Active-state-detection: a sidebar entry has the active styling when `route.path === node.path` OR `route.path.startsWith(node.path + '/')`. This means a tabs-container leaf is "active" when one of its tab-children is the current route
+- A `levels-container` node is **not** rendered as a sidebar entry; the sidebar shows only the children of the **active level** (per `useEffectiveScope()`)
 
 If the demo content has no nested chapters under any top-level directory (which is the current state), chapter-related assertions in this prompt should still **be present in the file** but use `test.fixme()` (Playwright's "not implemented yet" annotation) rather than `test()`. They become real tests once content with nested chapters exists. Note these as `fixme` in your final report.
 
 ## File spec — `tests/e2e/sidebar.spec.ts`
 
-Skeleton:
+Skeleton — adapt selectors to match the actual DOM that Step 2's components produce. The implementation prompt specifies the structure (`<nav>` root, `<button>` chapters with `aria-expanded`, `<NuxtLink>` page leaves with `aria-current` and `border-l` classes) — match those.
 
 ```ts
 import { expect, test } from '@playwright/test'
@@ -103,12 +107,10 @@ test.describe('section sidebar — scope-bound rendering', () => {
 		const navs = page.locator('aside nav')
 		await expect(navs).toHaveCount(1)
 		// scope-label is the first child div/row inside <nav> and contains an icon + the scope title
-		// adjust the selector to match the implementation; the assertion is "there is exactly one scope-label and it has both an icon and visible text"
 	})
 
 	test('the scope-label shows the icon from the directory index.md frontmatter', async ({ page }) => {
 		await page.goto('/getting-started/installation')
-		// the scope-label row holds an iconify-rendered <svg> or [data-icon] element
 		const icon = page.locator('aside nav').locator('svg, [class*=iconify], [data-icon]').first()
 		await expect(icon).toBeVisible()
 	})
@@ -119,7 +121,6 @@ test.describe('section sidebar — scope-bound rendering', () => {
 		await page.goto('/essentials/markdown-syntax')
 		const after = await page.locator('aside nav').textContent()
 		expect(before).not.toEqual(after)
-		// the new scope-label title differs from the old one
 	})
 })
 
@@ -151,67 +152,62 @@ test.describe('section sidebar — orphan pages container', () => {
 		// every page-link in the current scope shares the same parent container element
 		const pageLinks = page.locator('aside nav a').filter({ hasText: /^(markdown syntax|code blocks|prose components|images.*embeds)$/i })
 		await expect(pageLinks).toHaveCount(4)
-		// they all live as siblings under one container; assert via a common ancestor selector that the implementation uses
+		// they all live as siblings under one container; the implementation uses a common ancestor selector
 	})
 
 	test('the active page link has the info-coloured border-left class while siblings do not', async ({ page }) => {
 		await page.goto('/getting-started/installation')
 		const active = page.locator('aside nav [aria-current="page"]')
-		// assert the active link has a class that maps to --ui-primary border, and a sibling does not
-		// the exact class strings depend on the implementation; this assertion uses the contract that the active-state
-		// classes differ from the inactive-state classes in a way that is observable via getAttribute('class')
+		// the SPEC contracts on a border-left token that swaps to info-colour on active
 		await expect(active).toHaveClass(/border-\(--ui-primary\)|border-primary/)
 	})
 })
 
 test.describe('section sidebar — chapters (deferred until content has nested chapters)', () => {
-	test.fixme('clicking a chapter button toggles its child page-list', async ({ page }) => {
+	test.fixme('clicking a chapter button toggles its child page-list', async () => {
 		// no demo content currently has nested chapters; un-fixme this test once content exists
 	})
 
-	test.fixme('multiple chapters can be expanded simultaneously', async ({ page }) => {
+	test.fixme('multiple chapters can be expanded simultaneously (no accordion)', async () => {
 		// no demo content currently has nested chapters; un-fixme this test once content exists
 	})
 })
 
 test.describe('section sidebar — levels and tabs (deferred until 01-FOUNDATION/03-content-stubs ships)', () => {
-	test.fixme('a levels-container is never rendered as a sidebar entry', async ({ page }) => {
+	test.fixme('a levels-container is never rendered as a sidebar entry', async () => {
 		// once a levels-container exists in the demo content (e.g. /syntax/javascript with levels: true),
 		// navigate to one of its level pages and assert that no sidebar link points to the levels-container itself
 	})
 
-	test.fixme('the sidebar under a levels-container shows the active level pages', async ({ page }) => {
+	test.fixme('the sidebar under a levels-container shows the active level pages', async () => {
 		// at /syntax/javascript/junior/closures, the sidebar's scope-label is the junior level
 		// and its links are the junior level's pages, not pages from mid or senior
 	})
 
-	test.fixme('a tabs-container renders as a single leaf entry without tab-children in the sidebar', async ({ page }) => {
+	test.fixme('a tabs-container renders as a single leaf entry without tab-children in the sidebar', async () => {
 		// once a tabs-container exists in demo content (e.g. /docs/installation with tabs: true and vite/postcss/cli siblings),
 		// assert exactly one sidebar link for /docs/installation and zero links for /docs/installation/{vite,postcss,cli}
 	})
 
-	test.fixme('a tabs-container leaf gets aria-current when a tab-child is the active route', async ({ page }) => {
-		// at /docs/installation/vite, the /docs/installation leaf carries aria-current="true"
-		// and the active border colour
+	test.fixme('a tabs-container leaf gets the active styling when a tab-child is the active route', async () => {
+		// at /docs/installation/vite, the /docs/installation leaf has aria-current or the active border colour
+		// (the SPEC contracts this via path-prefix-match: route.path.startsWith(node.path + '/'))
 	})
 })
 
 test.describe('auto-sidebar fully replaced', () => {
 	test('the page does not render the docs-template UContentNavigation component', async ({ page }) => {
 		await page.goto('/')
-		// UContentNavigation renders distinct DOM patterns; the simplest invariant is that
-		// our <nav> is the only nav rendered inside <aside>, and it has the scope-label structure
+		// our <nav> is the only nav rendered inside <aside>, with the scope-label structure
 		// rather than the template's flat list of all routes
 		const navs = page.locator('aside nav')
 		await expect(navs).toHaveCount(1)
-		// a heuristic: the new sidebar shows only the current scope's children (a small finite count)
+		// heuristic: the new sidebar shows only the current scope's children (a small finite count)
 		const linkCount = await page.locator('aside nav a').count()
 		expect(linkCount).toBeLessThan(15) // arbitrary upper bound — the auto-sidebar would list many more
 	})
 })
 ```
-
-Adapt the selectors to match the actual DOM that Step 2's components produce. The implementation prompt specifies the structure (`<nav>` root, `<button>` chapters with `aria-expanded`, `<NuxtLink>` page leaves with `aria-current` and `border-l` classes) — match those.
 
 When in doubt about a selector, prefer `getByRole(...)` / `getByText(...)` / `[aria-current="page"]` over class-based selectors; classes can change, semantic queries cannot. The one exception is the active-state class assertion above — the SPEC explicitly contracts on the `border-(--ui-primary)` token, so a class match is the right tool.
 
@@ -229,8 +225,8 @@ When in doubt about a selector, prefer `getByRole(...)` / `getByText(...)` / `[a
 - ✅ Running `pnpm test:e2e` reports every active (non-`fixme`) test as **failing** until Step 1, Step 2, and the demo-content frontmatter prep all land — that is the intended red state
 - ✅ `pnpm lint` passes on the new file
 - ✅ `git status` shows **only** `tests/e2e/sidebar.spec.ts` as a new file — no incidental edits anywhere
-- ✅ Every behaviour rule under "Component contract" maps to at least one assertion in the file
-- ✅ Chapter-related tests are present as `test.fixme(...)` with a comment explaining the demo-content gap; they are not silently dropped
+- ✅ Every behaviour rule under "Component contract" maps to at least one assertion in the file (active or `fixme`)
+- ✅ Levels-container hidden, tabs-container as leaf, and chapter-related tests are present as `test.fixme(...)` with a comment explaining the demo-content gap; they are not silently dropped
 
 ## What NOT to do
 
@@ -242,7 +238,7 @@ When in doubt about a selector, prefer `getByRole(...)` / `getByText(...)` / `[a
 - ❌ **Do not** write tests against persistence, keyboard navigation, or focus-visible behaviour — those belong to Step 3's test prompt
 - ❌ **Do not** assert on internal implementation details (e.g. specific Vue refs, the names of sub-components, internal CSS classes that the SPEC doesn't contract on)
 - ❌ **Do not** mock the dev server; Playwright's webServer auto-start in `playwright.config.ts` handles it
-- ❌ **Do not** silently drop the chapter-related tests because the current demo content has no chapters; mark them `fixme` with a comment so the gap is visible
+- ❌ **Do not** silently drop the chapter / levels / tabs tests because the current demo content has no nested chapters or levels/tabs folders; mark them `fixme` with a comment so the gap is visible
 - ❌ **Do not** use snapshot testing or visual-regression screenshots; assert on DOM and roles
 
 ## When you're done
@@ -252,7 +248,7 @@ When in doubt about a selector, prefer `getByRole(...)` / `getByText(...)` / `[a
 3. Run `pnpm lint` and confirm zero errors on the new file
 4. Summarize:
    - The number of `test(...)` blocks per describe and a one-line note on which behaviour each block covers
-   - The number of `test.fixme(...)` blocks and what un-blocks each one (e.g. "demo content needs nested chapters")
+   - The number of `test.fixme(...)` blocks and what un-blocks each one (e.g. "demo content needs nested chapters", "demo content needs a levels-container")
    - The demo-content frontmatter changes the user must make before tests can pass green (icon, scope, missing index.md files)
    - Confirmation that `git status` shows only `tests/e2e/sidebar.spec.ts`
 

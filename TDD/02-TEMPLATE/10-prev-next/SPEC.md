@@ -2,7 +2,7 @@
 
 ## Summary
 
-**Default: gebruik `queryCollectionItemSurroundings` zoals 'ie OOTB werkt.** Deze customization is een **dunne wrapper** rond die OOTB-call die alleen één ding toevoegt: een scope-filter zodat prev/next niet over scope-grenzen springt (einde van Git → niet door naar /syntax/javascript). Level-awareness komt automatisch via URL-nesting (zie Levels, customization 04 — folder-based levels betekent dat native walks vanzelf binnen de actieve level blijven). Per de OOTB-first decision-rule (zie `02-TEMPLATE/README.md`): geen volledige replace, alleen extension met scope-filter. Voor lezers die door een hoofdstuk willen lezen als een boek.
+Deze customization vervangt de OOTB `queryCollectionItemSurroundings`-walk door een prev/next die leest uit `useNavTree` (zie Section sidebar, customization 02). Reden: OOTB walkt de hele collection plat zonder scope-besef, dus zou prev aan het eind van Git automatisch doorspringen naar /syntax/javascript. Onze tree weet al wat een scope-grens is en wat een tabs-container leaf is; één walk op die tree is goedkoper dan eerst OOTB roepen en het resultaat dan filteren. Level-awareness komt gratis via URL-nesting (zie Levels, customization 04 — folder-based levels betekent dat een walk binnen de scope vanzelf binnen de actieve level blijft). Voor lezers die door een hoofdstuk willen lezen als een boek.
 
 ## Goals
 

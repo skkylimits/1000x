@@ -97,92 +97,97 @@ Deze customization vervangt de auto-sidebar van de Nuxt UI docs-template door é
 
 ## Implementation Steps
 
-Geordende, reviewbare stappen. Elke stap is groot genoeg om iets zinvols op te leveren en klein genoeg om in één review-sessie door te lopen. Per stap krijgt de bijbehorende map onder `steps/` een `prompt.md` (de Claude Code task) en een `test-plan.md` (groen-criteria), opgesteld op het moment dat de stap aan de beurt komt.
+Drie geordende, reviewbare stappen. Elke stap is groot genoeg om een zinvol stuk gedrag op te leveren en klein genoeg om in één review-sessie door te lopen. Per stap krijgt de bijbehorende map onder `steps/` straks een `prompt.md` (de Claude Code task) en een `test-plan.md` (groen-criteria), opgesteld op het moment dat de stap aan de beurt komt — niet preemptief.
 
 ### Step 1 — Tree-build & `useNavTree()` composable
 
-Het pure data-fundament zonder UI-wijziging. Walkt `content/`, parseert frontmatter, bouwt de hiërarchische tree én de platte lookup. Levert scope walk-up, order-resolver, kind-detection (page/chapter/levels-container/tabs-container/level/tab), levels-effective-scope, en `index.md`-hoist. Faalt de build met heldere error op een ontbrekend `icon` op een chapter- of scope-node, of op een directory die zowel `levels` als `tabs` declareert. Stelt `useNavTree()` beschikbaar als single source voor alle consumers.
+Het pure data-fundament zonder UI-wijziging. Walkt de `docs`-collection, parseert frontmatter, bouwt de hiërarchische tree én de platte lookup, en stelt `useNavTree()` beschikbaar als single source voor elke nav-surface die er straks op leunt — header (customization 03), AppLevelHeader (customization 04), TabBar (customization 05), breadcrumb (customization 06), smart ToC (customization 08) en prev/next (customization 10) lezen allemaal uit deze ene composable. Faalt de build met een heldere error op een ontbrekend `icon` op een chapter-, scope-label- of level-node, of op een directory die zowel `levels` als `tabs` declareert. Bestaande sidebar blijft ongewijzigd op zijn baseline-render draaien.
 
 **Wat erin zit:**
 
-- `buildTree(rawContent, overlay?)` als pure functie; de `overlay`-parameter is aanwezig maar leeg (In-app content management, feature 02 in 03-FEATURES, vult 'm)
-- Order-resolver: expliciete `nav: [...]` array > `order: N` per pagina > alfabetisch op title; werkt ook voor levels-containers (`nav` > `levels: [...]`-array) en tabs-containers (`nav` > `tabs: [...]`-array)
-- Walk-up scope-resolver: vanaf een routePath omhoog tot de eerste node met expliciete `scope`-waarde; bij scope = levels-container, effective scope is de actieve level
-- Kind-detection: detecteert per node of het een `page`, `chapter`, `levels-container`, `tabs-container`, `level` of `tab` is op basis van frontmatter en parent-context
-- `index.md`-hoist: directory's `index.md` wordt de directory-node, verschijnt nooit als kind van zichzelf
-- Frontmatter-contract validatie: ontbrekend `icon` op chapter/scope-label/level → throw met file-pad; tegelijk `levels` én `tabs` op één directory → throw
-- `useNavTree()` als Nuxt composable, backed by `useState` zodat alle nav-surfaces dezelfde tree zien
-- Derived composables `useCurrentScope()`, `useEffectiveScope()`, `useBreadcrumb()` als pure computeds bovenop `useNavTree()`
+- `buildTree(pages, overlay?)` als pure functie; `overlay`-parameter is aanwezig maar wordt als no-op behandeld (In-app content management, feature 02 in 03-FEATURES, vult 'm)
+- `index.md`-hoist: directory's `index.md` wordt de directory-node en verschijnt nooit als kind van zichzelf; de `index.md`-frontmatter wint voor de directory
+- Kind-detection per node: `'page' | 'chapter' | 'levels-container' | 'tabs-container' | 'level' | 'tab'`, afgeleid uit frontmatter (`levels`, `tabs`) en parent-context
+- Order-resolver: expliciete `nav: [...]` op directory's `index.md` > `order: N` per pagina > alfabetisch op title; voor levels-containers en tabs-containers wint `nav: [...]` ook over de `levels: [...]` / `tabs: [...]`-array
+- Frontmatter-contract validatie: ontbrekend `icon` op chapter/scope-label/level → throw met file-pad in de message; tegelijk `levels` én `tabs` op één directory → throw
+- Walk-up scope-resolver: vanaf een routePath omhoog tot de eerste node met expliciete `scope: 'self' | 'children'`; geen match → fallback naar de top-level ancestor
+- Walk-up effective-scope-resolver: bij scope = levels-container is de effective scope de actieve level-folder op het pad (AppLevelHeader handelt het level-switchen straks zelf af op chrome-niveau)
+- Platte `lookup` Map<path, NavNode> naast de hiërarchische tree, voor constant-time scope-walks per page-change
+- `useNavTree()` als Nuxt composable, backed by `useState` zodat alle nav-surfaces SSR/CSR dezelfde tree zien zonder dubbele content-fetches
+- Derived composables `useCurrentScope()`, `useEffectiveScope()`, `useBreadcrumb()` als pure computeds bovenop `useNavTree()` + `useRoute()`
 
 **Wat eruit blijft:**
 
-- Geen UI-werk; bestaande sidebar blijft tijdelijk op zijn baseline-render draaien
-- Geen overlay-merge (In-app content management, feature 02 in 03-FEATURES)
-- Geen persistence, keyboard nav of a11y-uitwerking — komt in latere stappen
-- Geen AppLevelHeader of TabBar rendering — die leven in customization 02 en 03
+- Geen UI-werk; `SectionSidebar.vue` blijft op zijn baseline-render draaien tot Step 2
+- Geen overlay-merge (feature 02 in 03-FEATURES); `overlay`-parameter blijft no-op
+- Geen `usePrevNext` of flatten-walk; prev/next consumeert `useNavTree` straks, maar de logica leeft in customization 10 in 02-TEMPLATE
+- Geen AppLevelHeader-rendering (customization 04 in 02-TEMPLATE) of TabBar-rendering (customization 05 in 02-TEMPLATE); deze stap markeert alleen `kind`
+- Geen persistence, keyboard nav of WCAG-uitwerking (Step 3)
 
 **Tests:**
 
-- Unit (Vitest) over `buildTree`: basis tree-shape, `index.md`-hoist, platte `lookup`-mapping, kind-detectie per node-type
-- Unit over de order-resolver: expliciete `nav: [...]` overrulet, `order: N` daarna, alfabetisch als fallback; slugs niet in `nav` vallen aan de staart in alfabetische volgorde; `nav` overrulet `levels: [...]` en `tabs: [...]`
-- Unit over kind-detection: directories met `levels: true` krijgen `kind: 'levels-container'`; child-folders krijgen `kind: 'level'`; directories met `tabs: true` krijgen `kind: 'tabs-container'`; child-files krijgen `kind: 'tab'`
-- Unit over icon-validatie: ontbrekend `icon` op chapter, scope-label of level gooit een error met de file-pad in de message; leaf-pages zonder icon throwen niet
-- Unit over flag-conflict: `levels: true` én `tabs: true` op dezelfde directory throwt
-- Unit over `walkScope` (declared scope, walk-up tot eerste expliciete waarde, fallback naar top-level, unknown route → null)
-- Unit over `walkEffectiveScope`: bij levels-container ancestor levert het de actieve level-folder; bij gewone scope levert het de scope zelf
+- Unit (Vitest) over `buildTree`: basis tree-shape, `index.md`-hoist, platte `lookup`-mapping
+- Unit over kind-detection: alle zes kinds (`page`, `chapter`, `levels-container`, `tabs-container`, `level`, `tab`) correct geclassificeerd vanuit synthetic frontmatter-fixtures
+- Unit over de order-resolver: `nav: [...]` overrulet, `order: N` daarna, alfabetisch op title als fallback; slugs niet in `nav` vallen aan de staart in alfabetische volgorde; `nav` overrulet ook `levels: [...]` en `tabs: [...]`
+- Unit over icon-validatie: ontbrekend `icon` op chapter, scope-label of level throwt met de file-pad in de message; leaf-pages zonder icon throwen niet
+- Unit over flag-conflict: `levels: true` én `tabs: true` op dezelfde directory throwt met de offending path
+- Unit over `walkScope`: declared scope wordt gevonden, walk-up stopt bij eerste expliciete waarde, fallback naar top-level wanneer geen scope op het pad, unknown route → `null`
+- Unit over `walkEffectiveScope`: bij levels-container ancestor levert het de actieve level-folder op het pad; bij gewone scope levert het dezelfde node als `walkScope`; op de levels-container's eigen `index.md`-route levert het de levels-container zelf
 - Unit over `walkBreadcrumb`: bekend pad → `[root, ..., current]`; onbekend pad → `[]`
-- Geen E2E in deze stap — er verandert niets aan de UI
+- Geen E2E — er verandert niets aan de UI
 
 ### Step 2 — Scope-bound sidebar UI
 
-Vervangt de auto-sidebar uit de Nuxt UI docs-template door tree-driven rendering uit `useNavTree()` en `useEffectiveScope()`. Implementeert het visuele model: scope-label met icon, chapters met chevron, orphan-pages in een impliciete container, doorlopende verticale lijn met active-segment, tabs-containers als leaf-entries.
+Vervangt de auto-sidebar uit de Nuxt UI docs-template door tree-driven rendering uit `useNavTree()` + `useEffectiveScope()`. Implementeert het visuele model: scope-label met verplicht icon, chapters met chevron, orphan-pages in een impliciete container, één doorlopende verticale lijn met info-gekleurde active-positie, tabs-containers als leaf-entries en levels-containers volledig onzichtbaar (chrome leeft straks in AppLevelHeader). Active-state via path-prefix-match zodat een tabs-container active is wanneer één van zijn tabs in de URL staat.
 
 **Wat erin zit:**
 
 - `SectionSidebar.vue` consumeert `useNavTree()` + `useEffectiveScope()` + `useRoute()`
-- Scope-label bovenaan met verplicht icon (uit de effective scope, dus bij levels actief de level-folder's icon en title)
+- Scope-label bovenaan met verplicht icon en titel uit de huidige effective scope (bij levels-actief: de level-folder's icon en titel, niet die van de levels-container)
 - Chapters met chevron rechts; expanded toont children in een ingesprongen container
-- Orphan-pages renderen in dezelfde container als chapter-children
-- Tabs-containers renderen als leaf-entry (één entry, geen chevron, tab-children niet getoond)
-- Active-line: per-item `border-left` (1.5px); active page met info-kleur, anderen met tertiary-border-kleur
+- Orphan-pages (geen chapter-parent) renderen in dezelfde ingesprongen container alsof er een onzichtbaar standaard-chapter is, met gedeelde verticale lijn
+- Tabs-containers renderen als leaf-entry — geen chevron, tab-children worden NIET in de sidebar getoond (ze leven in de TabBar in-content, customization 05 in 02-TEMPLATE)
+- Levels-containers verschijnen NIET als sidebar-entries; de sidebar toont alleen de children van de **actieve level**
+- Active-line: per-item `border-left` van 1.5px; actieve pagina krijgt info-kleur, inactieve siblings de tertiary-border-kleur — één doorlopende lijn zonder dubbele linies of gat
+- Active-state-detectie: `route.path === node.path` OF `route.path.startsWith(node.path + '/')`, zodat een tabs-container active is wanneer een van zijn tabs open is
 - `aria-current="page"` op het actieve link
-- Auto-sidebar van de baseline-template expliciet unregisterd; ESLint-rule of CI-check weigert imports van het oude component
-- Active-state-detectie: `route.path === node.path` OF `route.path.startsWith(node.path + '/')` (zodat tabs-containers active zijn wanneer een tab open is)
+- Auto-sidebar van de baseline-template (`UContentNavigation`) verwijderd uit het render-pad; ESLint-rule of CI/grep-check weigert nieuwe imports
 
 **Wat eruit blijft:**
 
-- Collapse-state alleen runtime; geen persistence over sessies
-- Keyboard navigatie beperkt tot native browser-tab; geen roving tabindex of pijltjes-handlers
-- Lokale tree-mutaties (In-app content management, feature 02 in 03-FEATURES) niet zichtbaar — `overlay` blijft leeg
+- Collapse-state alleen runtime in deze stap; persistence over sessies komt in Step 3
+- Keyboard navigatie beperkt tot wat de browser default doet; roving tabindex en pijltjes-handlers komen in Step 3
+- Lokale tree-mutaties (feature 02 in 03-FEATURES) zijn niet zichtbaar — `overlay`-parameter blijft leeg
 
 **Tests:**
 
-- E2E (Playwright): scope-label rendert met icon en titel uit het `index.md` van de huidige effective scope (bij levels: actieve level)
+- E2E (Playwright): scope-label rendert met icon en titel uit het `index.md` van de huidige effective scope; bij levels-actief is dat de level-folder, niet de levels-container
 - E2E: chapter expand/collapse via klik; meerdere chapters tegelijk expanded werkt (geen accordion)
-- E2E: actief item krijgt `aria-current="page"` en de info-gekleurde `border-left`; inactieve siblings hebben de muted border-kleur
+- E2E: actief item krijgt `aria-current="page"` en de info-gekleurde `border-left`; inactieve siblings hebben tertiary-border-kleur
 - E2E: navigeren naar een pagina in een andere scope wisselt de sidebar-content
-- E2E: orphan-pages (zonder chapter-parent) renderen in dezelfde ingesprongen container met gedeelde verticale lijn
+- E2E: orphan-pages renderen in dezelfde ingesprongen container met gedeelde verticale lijn
 - E2E: een tabs-container verschijnt als leaf-entry; klikken navigeert naar de hub-route; tabs-children NIET zichtbaar in sidebar
 - E2E: een tabs-container is active in de sidebar wanneer een van zijn tabs in de URL staat
-- CI of grep-check: geen imports van `UContentNavigation` meer in `app/`
+- E2E: een levels-container verschijnt NIET als entry; alleen children van de actieve level worden getoond, en switchen tussen levels (via een dummy AppLevelHeader-link of directe URL) wisselt de getoonde children
+- CI- of grep-check: geen imports van `UContentNavigation` meer in `app/`
 
 ### Step 3 — Persistence, keyboard nav & WCAG 2.1 AA
 
-Laatste stap die de sidebar productie-rijp maakt. Collapse-state per chapter persisteert via een `settingsStore`-interface (localStorage als eerste implementatie; Settings, feature 03 in 03-FEATURES, hergebruikt deze interface ongewijzigd). Volledige keyboard-navigatie en WCAG 2.1 AA-conformiteit.
+Laatste stap die de sidebar productie-rijp maakt. Collapse-state per chapter persisteert via een dunne `settingsStore`-wrapper rond localStorage; Settings (feature 03 in 03-FEATURES) hergebruikt straks dezelfde interface zonder de sidebar aan te passen. Volledige keyboard-navigatie met roving tabindex, pijltjes-handlers en focus-visible styling die WCAG 2.1 AA passeert.
 
 **Wat erin zit:**
 
-- `useSidebarCollapse()` composable schrijft naar een `settingsStore`-wrapper rond localStorage; geen externe dep
+- `useSidebarCollapse()` composable schrijft via een `settingsStore`-wrapper rond localStorage; geen externe dep, geen VueUse
 - Roving tabindex binnen de sidebar als één focus-group
-- Toetsenbord-handlers: ↑/↓ tussen items in volgorde, ←/→ collapse/expand op chapter-buttons, `Enter` activeert link
-- Focus-visible styling via data-attribute, niet op default `:focus`
+- Toetsenbord-handlers: ↑/↓ tussen items in visuele volgorde, ←/→ collapse/expand op chapter-buttons, `Enter` activeert link
+- Focus-visible styling via een data-attribute, niet op default `:focus`
 - Accessible names op elk interactief element; geen tooltip-overlay
-- E2E coverage voor collapse-persistence-over-reload en volledige keyboard-flow
+- E2E coverage voor collapse-persistence-over-reload en de volledige keyboard-flow
 
 **Wat eruit blijft:**
 
-- Drag-and-drop reordering (In-app content management, feature 02 in 03-FEATURES)
-- Inline rename / context-menu-acties (View / Edit-toggle, feature 01 in 03-FEATURES, en In-app content management, feature 02 in 03-FEATURES)
+- Drag-and-drop reordering (feature 02 in 03-FEATURES)
+- Inline rename / context-menu-acties (feature 01 + feature 02 in 03-FEATURES)
 - Alles dat in `## Constraints` expliciet als "niet hier" gemarkeerd staat
 
 **Tests:**
@@ -193,6 +198,6 @@ Laatste stap die de sidebar productie-rijp maakt. Collapse-state per chapter per
 - E2E: ←/→ op een chapter-button collapse/expand met juiste `aria-expanded`-update
 - E2E: `Enter` op een gefocuste page-link navigeert naar die pagina
 - E2E: focus-visible ring (`data-focus-visible="true"`) verschijnt alleen na keyboard focus, niet na muis-klik
-- Unit / integration: `useSidebarCollapse()` schrijft via `settingsStore`-interface, niet rechtstreeks naar `localStorage`, zodat Settings (feature 03 in 03-FEATURES) dezelfde interface kan hergebruiken
+- Unit/integration: `useSidebarCollapse()` schrijft via de `settingsStore`-interface, niet rechtstreeks naar `localStorage`, zodat Settings (feature 03 in 03-FEATURES) dezelfde interface kan hergebruiken
 - A11y: elk interactief element heeft een toegankelijke naam; geen `role="tree"`, `aria-level` of `aria-setsize` in de markup
 - Optioneel: `@axe-core/playwright` smoke test op een representatieve pagina, zero `serious` of `critical` violations

@@ -6,8 +6,8 @@ This task writes the **tests** for the third (and final) implementation step of 
 
 **Read these documents before starting:**
 
-- `TDD/SPEC.md` — overall product spec; **§ 12. Settings** for the localStorage `ui:{key}` convention; cross-cutting WCAG 2.1 AA requirement
-- `TDD/02-TEMPLATE/02-section-sidebar/SPEC.md` — this customization in detail. **§ Implementation Steps → Step 3** lists the contract; **§ Implementation Steps → Step 3 → Tests** is the green-criteria checklist; **§ Constraints** lists what stays out
+- `TDD/SPEC.md` — overall product spec; cross-cutting WCAG 2.1 AA requirement for every interactive element
+- `TDD/02-TEMPLATE/02-section-sidebar/SPEC.md` — this customization in detail. **§ Implementation Steps → Step 3** lists the contract; the **Tests** bullet-list under Step 3 is the green-criteria checklist; **§ Constraints** lists what stays out
 - `TDD/02-TEMPLATE/02-section-sidebar/steps/03-persistence-keyboard-a11y/prompt.md` — the implementation prompt for Step 3. The contracts this test prompt asserts on **must match** that document; if there is a discrepancy, the implementation prompt wins and you flag it in your final report
 - `TDD/03-FEATURES/03-settings/SPEC.md` — the future feature that will reuse the `settingsStore` interface introduced in Step 3
 - `AGENTS.md` — established conventions
@@ -18,7 +18,7 @@ You write tests against an API and a set of behaviours that **do not exist yet**
 
 **Test infrastructure already exists at the repo root** — Vitest is installed (`tests/unit/`), Playwright is installed with chromium (`tests/e2e/`), and `pnpm test`, `pnpm test:e2e`, `pnpm test:all` are wired up. You only write the test files.
 
-**Sequencing assumption:** Step 1 and Step 2 implementations are merged before this suite is run green. The `useNavTree`, `useCurrentScope`, and the `<SectionSidebar>` / `<SidebarChapter>` / `<SidebarPageList>` components from those earlier steps exist and behave as specified.
+**Sequencing assumption:** Step 1 and Step 2 implementations are merged before this suite is run green. The `useNavTree`, `useEffectiveScope`, and the `<SectionSidebar>` component from those earlier steps exist and behave as specified.
 
 ## Task
 
@@ -39,14 +39,14 @@ Write three test files that together cover the Step 3 contract:
 
 - Anything inside `app/` — the implementation prompt owns it
 - Modifying demo content (Step 2's content prep is a prerequisite already)
-- The `useSidebarCollapse()` composable as a unit test in isolation — it depends on Nuxt's `useState` runtime which we do not bring into the unit-test environment. The E2E tests cover the integration end-to-end (collapse → reload → still collapsed)
+- The `useSidebarCollapse()` composable as a unit test in isolation — it depends on Nuxt's runtime which we do not bring into the unit-test environment. The E2E tests cover the integration end-to-end (collapse → reload → still collapsed)
 - An `@axe-core/playwright` smoke test — the implementation prompt marks this as optional; this test prompt does **not** add it. If the user wants it later, that's a one-line addition to the keyboard spec or a new `tests/e2e/sidebar-a11y.spec.ts`
 
 ## Prerequisites — what you can assume
 
 - Repo-level test infra is in place (Vitest + Playwright, configs, scripts)
-- `tests/unit/` and `tests/e2e/` exist (with `.gitkeep` placeholders)
-- The current branch is `01-template`. Step 3 implementation has **not** been merged
+- `tests/unit/` and `tests/e2e/` exist (with `.gitkeep` placeholders or earlier-step files)
+- Step 3 implementation has **not** been merged
 - Sequencing: at the time the suite runs green, Step 1, Step 2, and the demo-content frontmatter prep have already landed
 
 Before starting, run:
@@ -106,6 +106,7 @@ Behaviour rules — the unit tests assert these:
 - `collapse-state` persists across page reloads under `localStorage` key `ui:sidebar:collapsed`, JSON-encoded as `{ [chapterPath: string]: boolean }`
 - The default state for any chapter is **expanded** when no entry exists
 - The sidebar markup contains **no** `role="tree"`, `aria-level`, or `aria-setsize` attributes
+- Every interactive element (button, link) has an accessible name
 
 If anything is ambiguous, prefer the wording in `prompt.md` over this restatement — the implementation prompt is canonical.
 
@@ -115,11 +116,9 @@ If anything is ambiguous, prefer the wording in `prompt.md` over this restatemen
 
 Pure-function unit tests for the storage adapter. The implementation runs against `window.localStorage`; in node-environment Vitest, `window` does not exist by default. Stub it with a minimal `localStorage`-shaped mock in `beforeEach` so the tests run without JSDOM.
 
-Skeleton:
-
 ```ts
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SettingsStore } from '../../app/utils/settingsStore'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 interface FakeStorage {
 	[key: string]: string
@@ -178,7 +177,6 @@ describe('settingsStore — defaults and resilience', () => {
 
 	it('swallows QuotaExceededError on set without throwing', async () => {
 		const { createLocalStorageStore } = await import('../../app/utils/settingsStore')
-		// replace setItem to throw
 		const win = (globalThis as Record<string, unknown>).window as { localStorage: Storage }
 		const original = win.localStorage.setItem
 		win.localStorage.setItem = () => { throw new Error('QuotaExceededError') }
@@ -228,7 +226,7 @@ describe('settingsStore — SSR safety', () => {
 })
 ```
 
-Use dynamic `await import(...)` inside each `it` (or once per describe via `beforeAll`) so the module is freshly evaluated per test run with the right `globalThis.window` stub in place. If you find a single top-level `import` works because the production code reads `window` lazily inside each method, prefer that — but verify by checking the `prompt.md` implementation hint, which reads `window.localStorage` lazily on every call. Top-level import should be fine.
+Use dynamic `await import(...)` inside each `it` so the module is freshly evaluated per test run with the right `globalThis.window` stub in place. If you find a single top-level `import` works because the production code reads `window` lazily inside each method, prefer that — but verify by checking the `prompt.md` implementation hint, which reads `window.localStorage` lazily on every call.
 
 ### `tests/e2e/sidebar-persistence.spec.ts`
 
@@ -289,7 +287,6 @@ test.describe('sidebar keyboard navigation', () => {
 	})
 
 	test('Tab brings focus into the sidebar nav within a small bounded number of presses', async ({ page }) => {
-		// press Tab repeatedly until document.activeElement is inside <aside nav>; bound it to a sane upper limit
 		const maxPresses = 30
 		let inside = false
 		for (let i = 0; i < maxPresses; i++) {
@@ -346,7 +343,6 @@ test.describe('sidebar focus-visible behaviour', () => {
 	test('a link does not have data-focus-visible="true" after a mouse click focuses it', async ({ page }) => {
 		await page.goto('/getting-started/installation')
 		const link = page.locator('aside nav a', { hasText: /usage/i }).first()
-		// click navigates; come back and verify focus arrived from a click
 		await link.click()
 		await expect(page).toHaveURL(/usage/)
 		const usageLink = page.locator('aside nav [aria-current="page"]')
@@ -391,7 +387,8 @@ Adapt the selectors to match the actual DOM that Step 3 produces, but stay close
 
 - Tabs for indentation, single quotes, no semicolons — `@antfu/eslint-config` is the source of truth
 - Explicit imports of `describe`, `it`, `expect`, `test`, `beforeEach`, `afterEach` from their respective packages (Vitest globals are off, Playwright never sets globals)
-- TypeScript on; types imported via the Vue-style `import { … type Foo } from '…'` syntax
+- TypeScript on; type imports via the `import type { … } from '…'` syntax (the project's ESLint enforces `import/consistent-type-specifier-style`)
+- Named imports must be alphabetical (`perfectionist/sort-named-imports`)
 - One assertion per `it` / `test` where reasonable; multiple assertions are fine when they all describe one behaviour
 - Use `test.fixme(...)` (not `test.skip`) for tests deferred on demo-content gaps; `fixme` shows up as "expected to fail" rather than silent skip
 
