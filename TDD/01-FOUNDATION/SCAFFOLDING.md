@@ -214,115 +214,48 @@ Twee dingen om bewust te zijn:
 
 ---
 
-## 5. AI-context files
+## 5. Content-stubs — testbed voor stage 2
 
-Belangrijk voor latere Claude Code sessies, Cursor, Codex etc. Niet skippen — investeert in correcte agent-output.
+Foundation eindigt pas wanneer er een minimale-maar-realistische tree onder `content/` staat die alle render-paden uit stage 2 dekt: scope-modes (`self`, `children`, fallback), folder-based levels (Junior/Mid/Senior), file-based tabs (Tailwind-stijl), MDC inline `::tabs` voor kleine alternatives, standalone topics, en een knowledge-base zonder eigen scope.
 
-### `AGENTS.md` op project-root
+Volledige tree-shape, frontmatter-conventies en coverage-matrix staan in [`03-content-stubs/SPEC.md`](./03-content-stubs/SPEC.md). Voer dat hier uit:
 
-```md
-# 1000x — Agent Context
+1. Maak de in de SPEC voorgestelde directories en `index.md`-files onder `content/`
+2. Behoud de docs-template's eigen demo-content (`getting-started`, `essentials`, `ai`) als coverage van baseline-markdown features — alleen 1000x-specifieke structuur erbovenop
+3. Run `pnpm dev` en verifieer dat alle stub-routes 200 geven en de frontmatter correct geparsed wordt door het schema uit sectie 4
 
-> Canonical AI/agent context. CLAUDE.md en GEMINI.md zijn pointers naar dit bestand.
-
-## Project
-
-**1000x** — bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Doelpubliek: intern, werknemers. Niet voor publiek of zoekmachines. Gebouwd op de Nuxt UI docs-template als baseline.
-
-Zie `SPEC.md` voor de volledige product-specificatie, `FEATURES.md` voor de drie-stage roadmap, `02-TEMPLATE/` voor customizations bovenop de docs-template, en `03-FEATURES/` voor de tien echte features.
-
-## Stack
-
-- **Baseline**: Nuxt UI docs-template (https://github.com/nuxt-ui-templates/docs)
-- **Framework**: Nuxt 4
-- **UI**: Nuxt UI v4
-- **Content**: Nuxt Content v3
-- **i18n**: `@nuxtjs/i18n` — NL default, EN secundair
-- **Iconen**: `@nuxt/icon` met lokale Iconify-bundles. Custom SVGs alleen als laatste redmiddel.
-- **Images**: `@nuxt/image` met IPX provider (vanaf het begin geïntegreerd in `ProseImg`-override)
-- **PWA**: `@vite-pwa/nuxt`
-- **Code-editor (later)**: CodeMirror 6
-- **Code-execution (later)**: Web Workers + WASM
-- **Persistentie Phase 1**: localStorage
-- **Deployment Phase 1**: SSG op Cloudflare Pages of Vercel
-
-## Drie soorten werk
-
-Wanneer een task binnenkomt, classificeer hem eerst:
-
-1. **Foundation** (`01-FOUNDATION/`) — éénmalig setup: branding, i18n, schema, AGENTS, deployment, content-stubs
-2. **Template customization** (`02-TEMPLATE/`) — aanpassen wat de template of Nuxt Content levert: sidebar, header, levels, tabs, page-chrome, right-panel, smart-toc, changelog, prev-next, search, math/diagrammen, image-lightbox
-3. **Eigen feature** (`03-FEATURES/`) — bouwen wat de template niet heeft: code-editor, card-trainer, AI-assistent, etc.
-
-Niet door elkaar halen. Een PR die zowel foundation als customizations als feature-werk doet wordt afgewezen.
-
-## Conventies
-
-### Code style
-
-- **Tabs** voor indentatie (size 4 in editor weergave)
-- **Single quotes** voor strings
-- **Geen semicolons** — `@antfu/eslint-config`
-- **No Prettier** — ESLint is alleenheerser
-- **Vue SFC**: `<script setup lang="ts">` voor nieuwe components
-- **Auto-imports** zijn aan
-
-### Iconen
-
-Nuxt UI v4 levert vrijwel alle componenten die we nodig hebben. Bij elk UI-element:
-
-1. Eerst checken of Nuxt UI v4 het levert (component én MDC-block)
-2. Pas als het niet bestaat of fundamenteel onvoldoende is, een eigen component bouwen door een Nuxt UI component te slot-overriden of te wrappen
-3. Volledig from-scratch alleen als laatste optie
-
-"Niet bestaat" betekent letterlijk niet bestaat — niet "bestaat maar ik wil iets anders". Smaak-verschillen los je op met theming via `app.config.ts`.
-
-Iconen zelf: eerste keuze Iconify (`lucide:search`, `tabler:code`, `simple-icons:javascript`). Niet beschikbaar? Iconify-set toevoegen. Geen passende? Custom SVG in `app/components/icons/`. Nooit inline SVG-strings in components.
-
-### Content
-
-- Frontmatter velden gevalideerd via Zod-schema in `content.config.ts`
-- Filenames blijven inhoudelijk (`closures.md`, niet `1.intro.md`). Volgorde via `nav: [...]`
-- Iedere directory met `scope: self` of `scope: children` is een sidebar-grens
-- Levels: folder-based onder een directory met `levels: true` (Junior/Mid/Senior, Windows/Linux/macOS); AppLevelHeader rendert als chrome-sub-header. Tabs: file-based siblings onder een directory met `tabs: true`
-- Assets in `public/` mirrort de content-tree
-
-### i18n
-
-- UI-strings in `i18n/locales/{lang}.json` — geen hardcoded strings
-- Content per taal: `page.nl.md`, `page.en.md`. Default `nl`
-- LocalStorage-keys bevatten `{lang}`: `draft:nl:syntax/javascript/closures`
-
-## Niet doen
-
-- Geen `.navigation.yml` — nav-tree komt uit filesystem + frontmatter + localStorage
-- Geen Prettier
-- Geen runtime-fetches naar Iconify CDN
-- Geen content scrapen of regurgiteren in AI-features
-- Geen telemetry in Phase 1
-```
-
-### `CLAUDE.md`
-
-```md
-# CLAUDE
-
-Lees `AGENTS.md` voor de canonical project-context.
-```
-
-### `GEMINI.md`
-
-```md
-# GEMINI
-
-Lees `AGENTS.md` voor de canonical project-context.
-```
+Pas wanneer alle stub-routes laden zonder errors is foundation echt af. Stage 2 customizations bouwen tegen deze tree — anders ontbreekt het testbed voor scope-walks, level-headers, tab-bars en kind-detection in `useNavTree`.
 
 ---
 
-## 7. ESLint en code style
+## 6. AI-context files
 
-De template heeft waarschijnlijk z'n eigen ESLint-config. Vervang met onze config gebaseerd op `@antfu/eslint-config`:
+Drie AI-context files leven aan de project-root: **`AGENTS.md`** (canonical), **`CLAUDE.md`** en **`GEMINI.md`** (één-zin pointers naar AGENTS.md). Plus **`ONBOARDING.md`** (doc-flow voor fresh agents en developers).
+
+**`AGENTS.md` is de bron-van-waarheid** — niet overschrijven of dupliceren. Als hij al bestaat (wat het geval zou moeten zijn op een initial-setup branch die met onze andere docs is meegekomen), laat 'm met rust en check alleen dat de inhoud nog matcht met:
+
+- De drie-stage structuur (`01-FOUNDATION/`, `02-TEMPLATE/`, `03-FEATURES/`)
+- De Pinia-discipline ("pas vanaf feature 02 in 03-FEATURES" — zie `TDD/ARCHITECTURE.md`)
+- De OOTB-first decision-rule (zie `TDD/02-TEMPLATE/README.md`)
+- De pnpm-only verification-commands
+
+Als `AGENTS.md` ontbreekt: kopieer 'm uit een andere branch (`main` of een eerdere refactor-branch), of bouw 'm op vanaf scratch met de drie-stage structuur als basis.
+
+`CLAUDE.md` en `GEMINI.md` zijn één-zin-pointers; maak ze als ze ontbreken:
+
+```md
+# CLAUDE   (of: GEMINI)
+
+Lees `AGENTS.md` voor de canonical project-context.
+```
+
+`ONBOARDING.md` aan project-root bevat de doc-flow met diagram — zie de huidige versie als referentie voor de inhoud.
+
+---
+
+## 7. ESLint en code style — minimum werkende setup
+
+> Voor de volledige tooling-deep-dive (`.vscode/settings.json` met Tailwind class-regex, file-nesting, extension-recommendations, Prettier-uitsluiting) zie [`../TOOLING-STRATEGY.md`](../TOOLING-STRATEGY.md). Deze sectie levert alleen het minimum om foundation lint-clean door te komen.
 
 ```bash
 pnpm add -D @antfu/eslint-config
@@ -358,7 +291,7 @@ export default withNuxt(
 )
 ```
 
-`.editorconfig` op project-root:
+`.editorconfig` aan project-root:
 
 ```
 root = true
@@ -375,19 +308,6 @@ insert_final_newline = true
 trim_trailing_whitespace = false
 ```
 
-`.vscode/settings.json`:
-
-```json
-{
-	"editor.formatOnSave": false,
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": "explicit"
-	},
-	"prettier.enable": false,
-	"typescript.tsdk": "node_modules/typescript/lib"
-}
-```
-
 `package.json` scripts (merge met wat de template al heeft):
 
 ```json
@@ -400,11 +320,102 @@ trim_trailing_whitespace = false
 }
 ```
 
+`.vscode/settings.json` minimaal (zie TOOLING-STRATEGY voor de uitgebreide versie):
+
+```json
+{
+	"editor.formatOnSave": false,
+	"editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+	"prettier.enable": false,
+	"typescript.tsdk": "node_modules/typescript/lib"
+}
+```
+
 Run `pnpm lint:fix` één keer om alle template-files automatisch in onze stijl te brengen. Daarna één commit "chore: align with antfu eslint config".
 
 ---
 
-## 8. Branden van template-content (NIET verwijderen)
+## 8. Test-infra — Vitest en Playwright
+
+Foundation rondt af met een werkende test-pipeline zodat customizations vanaf dag één tegen tests kunnen worden geverifieerd.
+
+```bash
+pnpm add -D vitest @vitest/ui @playwright/test playwright
+pnpm exec playwright install chromium
+```
+
+`vitest.config.ts` aan project-root:
+
+```ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+	test: {
+		include: ['tests/unit/**/*.test.ts'],
+		environment: 'node',
+		globals: false,
+	},
+})
+```
+
+`playwright.config.ts` aan project-root:
+
+```ts
+import process from 'node:process'
+import { defineConfig, devices } from '@playwright/test'
+
+const PORT = Number(process.env.PORT) || 3000
+
+export default defineConfig({
+	testDir: './tests/e2e',
+	timeout: 30 * 1000,
+	use: {
+		baseURL: `http://localhost:${PORT}`,
+		trace: 'on-first-retry',
+	},
+	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+	webServer: {
+		command: 'pnpm dev',
+		port: PORT,
+		reuseExistingServer: !process.env.CI,
+		timeout: 120 * 1000,
+	},
+})
+```
+
+Scripts in `package.json` (merge met de bestaande):
+
+```json
+{
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:e2e": "playwright test",
+		"test:all": "pnpm test && pnpm test:e2e"
+	}
+}
+```
+
+Voeg test-artifacten toe aan `.gitignore`:
+
+```
+test-results/
+playwright-report/
+playwright/.cache/
+```
+
+Maak placeholder folders zodat git ze tracket:
+
+```bash
+mkdir -p tests/unit tests/e2e
+touch tests/unit/.gitkeep tests/e2e/.gitkeep
+```
+
+Verifieer: `pnpm test` reports "no test files found" + exit 1 (verwacht — geen tests nog). `pnpm test:e2e --list` discovert nog niets. Dat is OK; de eerste tests landen bij stage-2 customizations.
+
+---
+
+## 9. Branden van template-content (NIET verwijderen)
 
 De template komt met een uitgebreide demo-content (`content/`) die alle markdown-features showcaset: code blocks, prose elements, MDC components, search-resultaten, dark-mode kleuring, image embeds, callouts. **Behoud deze content tijdens foundation en customizations** — het is je live regression test-suite. Als je iets sloopt aan de markdown-pipeline, zie je het direct in de gebrande demo-content.
 
@@ -425,14 +436,22 @@ Refresh `localhost:3000` — je zou nu een gebrand 1000x-project moeten zien met
 
 ## Wat hierna
 
-Foundation is klaar. Volgende fase: `02-TEMPLATE/`. Per customization één PR met scope, beschrijving en tests.
+Foundation is klaar wanneer:
 
-Eerste twee customizations om te overwegen:
+- ✅ Branding staat (rode `1`, 1000x site-name, noindex-headers)
+- ✅ i18n NL/EN werkt met UI-strings via `$t(...)` en geen hardcoded text
+- ✅ Content-schema heeft `scope`, `nav`, `order`, `levels`, `tabs`, `icon`, `schemaVersion`
+- ✅ Content-stubs onder `content/` dekken alle render-paden voor stage 2 (zie `03-content-stubs/SPEC.md`)
+- ✅ AI-context files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `ONBOARDING.md`) staan en zijn in sync
+- ✅ ESLint draait clean (`pnpm lint` exit 0); `pnpm typecheck` exit 0
+- ✅ Vitest + Playwright zijn opgezet; `pnpm test` start zonder errors (geen tests nog = OK)
+- ✅ `pnpm dev` toont een gebrand 1000x-project met de demo-content nog volledig functioneel
 
-1. **`01-branding.md`** — als je in deze foundation-fase iets bent vergeten of fijn-tuner wilt zijn
-2. **`02-content-schema.md`** — uitwerken hoe `scope`, `nav` etc. visueel werken in de bestaande template-sidebar voordat we 'm vervangen
+Volgende fase: `02-TEMPLATE/`. Per customization één PR met scope, beschrijving en tests. De volgorde + decision-rule (OOTB-first) staat in [`../02-TEMPLATE/README.md`](../02-TEMPLATE/README.md).
 
-Daarna de grotere customizations (section-sidebar, header, levels, tabs, page-chrome, right-panel, smart-toc, changelog, prev-next, search), en pas dán de echte 1000x-features uit `03-FEATURES/`.
+**Eerste customization** is **`01-markdown-rendering`** — verifieer dat de docs-template's markdown-pipeline doet wat onze SPEC vraagt en breid het schema-pad uit waar nodig. Daarna **`02-section-sidebar`** (de grootste — bevat tree-build + sidebar-render in 3 stappen).
+
+Daarna de overige customizations in volgorde (`03-header`, `04-levels`, `05-tabs`, `06-page-chrome`, `07-right-panel`, `08-smart-toc`, `09-changelog`, `10-prev-next`, `11-search`, `12-math-en-diagrammen`, `13-image-lightbox`), en pas dán de echte 1000x-features uit `03-FEATURES/`.
 
 ---
 
