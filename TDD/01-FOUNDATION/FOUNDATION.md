@@ -1,3 +1,5 @@
+# FOUNDATION
+
 Je gaat het 1000x project initialiseren door de Nuxt UI docs-template als
 baseline te gebruiken en daarop onze foundation-laag aan te brengen. Het
 resultaat is een gebrand 1000x-project dat klaar is voor template
