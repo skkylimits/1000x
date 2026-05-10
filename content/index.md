@@ -1,7 +1,7 @@
 ---
 seo:
-  title: Nuxt Docs Template
-  description: Create stunning, fast and SEO-optimized documentation sites with Nuxt UI.
+  title: 1000x
+  description: Bedrijfsbreed second-brain — documentatiesite, wiki en interactief leersysteem in één.
 ---
 
 ::u-page-hero{class="dark:bg-gradient-to-b from-neutral-900 to-neutral-950"}
@@ -12,10 +12,10 @@ orientation: horizontal
 :hero-background
 
 #title
-Ship Beautiful [Documentation]{.text-primary}.
+[1]{.text-primary}000x
 
 #description
-Build professional documentation with Nuxt UI's powerful components, enhanced typography, and seamless Nuxt Content integration. The same system trusted by the entire [Nuxt ecosystem](https://nuxt.com).
+Bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Lezen, bewerken, oefenen en bediscussiëren in dezelfde view.
 
 #links
   :::u-button
@@ -24,19 +24,7 @@ Build professional documentation with Nuxt UI's powerful components, enhanced ty
   size: xl
   trailing-icon: i-lucide-arrow-right
   ---
-  Get started
-  :::
-
-  :::u-button
-  ---
-  icon: i-simple-icons-github
-  color: neutral
-  variant: outline
-  size: xl
-  to: https://github.com/nuxt-ui-templates/docs
-  target: _blank
-  ---
-  Use this template
+  Aan de slag
   :::
 
 #default
@@ -48,7 +36,8 @@ Build professional documentation with Nuxt UI's powerful components, enhanced ty
         '@nuxt/ui',
         '@nuxt/content',
         'nuxt-og-image',
-        'nuxt-llms'
+        'nuxt-llms',
+        '@nuxtjs/i18n'
       ],
 
       css: ['~/assets/css/main.css']
@@ -62,7 +51,8 @@ Build professional documentation with Nuxt UI's powerful components, enhanced ty
       '@nuxt/ui',
       '@nuxt/content',
       'nuxt-og-image',
-      'nuxt-llms'
+      'nuxt-llms',
+      '@nuxtjs/i18n'
     ],
 
     css: ['~/assets/css/main.css']
@@ -73,20 +63,7 @@ Build professional documentation with Nuxt UI's powerful components, enhanced ty
 
 ::u-page-section{class="dark:bg-neutral-950"}
 #title
-Powered by Nuxt UI components
-
-#links
-  :::u-button
-  ---
-  color: neutral
-  size: lg
-  target: _blank
-  to: https://ui.nuxt.com/docs/getting-started/installation/nuxt
-  trailingIcon: i-lucide-arrow-right
-  variant: subtle
-  ---
-  Explore Nuxt UI
-  :::
+Onder de motorkap
 
 #features
   :::u-page-feature
@@ -94,10 +71,10 @@ Powered by Nuxt UI components
   icon: i-lucide-palette
   ---
   #title
-  100+ UI Components
+  100+ UI-componenten
 
   #description
-  Access the complete Nuxt UI component library. From badges to modals, everything styled and accessible out of the box.
+  Volledige UI-bibliotheek uit de doos — badges, modals, tabs, command palette. Allemaal toegankelijk en consistent gestyled.
   :::
 
   :::u-page-feature
@@ -105,10 +82,10 @@ Powered by Nuxt UI components
   icon: i-lucide-type
   ---
   #title
-  Beautiful Typography
+  Verzorgde typografie
 
   #description
-  Pre-styled prose components with perfect visual harmony. No need for @tailwindcss/typography - get precise control over every element.
+  Pre-styled prose-componenten met visueel ritme. Geen handmatige Tailwind-typography-config — directe controle per element.
   :::
 
   :::u-page-feature
@@ -116,10 +93,10 @@ Powered by Nuxt UI components
   icon: i-lucide-layers
   ---
   #title
-  Rich Prose Components
+  MDC-componenten
 
   #description
-  Accordions, cards, callouts, tabs, steps, code blocks, and more - all provided by Nuxt UI for interactive documentation.
+  Accordions, cards, callouts, tabs, steps, code blocks. Mix Markdown en interactieve Vue-componenten in één bestand.
   :::
 
   :::u-page-feature
@@ -127,10 +104,10 @@ Powered by Nuxt UI components
   icon: i-lucide-search
   ---
   #title
-  Built-in Search
+  Ingebouwde search
 
   #description
-  Full-text search with ContentSearch component. No need for Algolia - instant, relevant results with keyboard shortcuts (⌘K).
+  Full-text search met fuzzy matching, keyboard shortcuts (⌘K) en directe navigatie. Geen externe service nodig.
   :::
 
   :::u-page-feature
@@ -138,10 +115,10 @@ Powered by Nuxt UI components
   icon: i-lucide-navigation
   ---
   #title
-  Smart Navigation
+  Slimme navigatie
 
   #description
-  Auto-generated navigation with ContentNavigation and ContentToc components. Sticky table of contents and prev/next links.
+  Auto-generated navigatie en table of contents. Sticky ToC, prev/next, breadcrumb — allemaal afgeleid van je content-tree.
   :::
 
   :::u-page-feature
@@ -149,29 +126,16 @@ Powered by Nuxt UI components
   icon: i-lucide-moon
   ---
   #title
-  Dark Mode Ready
+  Dark mode
 
   #description
-  Automatic theme switching with smooth transitions. Respects system preferences and remembers user choice.
+  Vloeiende thema-wissel die systeem-voorkeuren respecteert en de gebruikerskeuze onthoudt.
   :::
 ::
 
 ::u-page-section{class="dark:bg-neutral-950"}
 #title
-Enhanced with Nuxt Content
-
-#links
-  :::u-button
-  ---
-  color: neutral
-  size: lg
-  target: _blank
-  to: https://content.nuxt.com/docs/getting-started/installation
-  trailingIcon: i-lucide-arrow-right
-  variant: subtle
-  ---
-  Explore Nuxt Content
-  :::
+Markdown als bron-van-waarheid
 
 #features
   :::u-page-feature
@@ -179,10 +143,10 @@ Enhanced with Nuxt Content
   icon: i-simple-icons-markdown
   ---
   #title
-  MDC Enhanced Markdown
+  MDC-uitgebreid
 
   #description
-  Write in Markdown while embedding Vue components. Seamlessly integrate interactive elements in your content.
+  Schrijf in Markdown, embed Vue-componenten waar nodig. Interactieve elementen mengen naadloos met prose.
   :::
 
   :::u-page-feature
@@ -190,10 +154,10 @@ Enhanced with Nuxt Content
   icon: i-lucide-file-text
   ---
   #title
-  File-based Routing
+  File-based routing
 
   #description
-  Organize content in folders and files. Your documentation structure automatically becomes your navigation.
+  Folder-structuur wordt navigatie-structuur. Een nieuwe pagina toevoegen is een markdown-file aanmaken.
   :::
 
   :::u-page-feature
@@ -201,10 +165,10 @@ Enhanced with Nuxt Content
   icon: i-lucide-code
   ---
   #title
-  Syntax Highlighting
+  Syntax highlighting
 
   #description
-  Beautiful code blocks with language detection, line numbers, and copy buttons. Support for 100+ languages.
+  Code-blocks met taaldetectie, line numbers en copy-buttons. Ondersteuning voor 100+ talen.
   :::
 
   :::u-page-feature
@@ -212,10 +176,10 @@ Enhanced with Nuxt Content
   icon: i-lucide-database
   ---
   #title
-  Content Database
+  Content-database
 
   #description
-  Query your content with a MongoDB-like API. Filter, sort, and search through your documentation programmatically.
+  Query je content met een MongoDB-achtige API. Filter, sort en zoek door je documentatie programmatisch.
   :::
 
   :::u-page-feature
@@ -223,10 +187,10 @@ Enhanced with Nuxt Content
   icon: i-lucide-file-code
   ---
   #title
-  Frontmatter Support
+  Frontmatter-schema
 
   #description
-  Add metadata to your content files. Define SEO tags, navigation properties, and custom fields.
+  Gevalideerd via Zod. Nav-volgorde, scope, levels, tabs — allemaal frontmatter-velden, geen losse config-files.
   :::
 
   :::u-page-feature
@@ -234,10 +198,10 @@ Enhanced with Nuxt Content
   icon: i-lucide-git-branch
   ---
   #title
-  Version Control
+  Versiebeheer
 
   #description
-  Content lives in your repository. Branch, review, and deploy documentation alongside your code.
+  Content leeft in je repository. Branch, review en deploy je documentatie naast je code.
   :::
 ::
 
@@ -245,16 +209,11 @@ Enhanced with Nuxt Content
   :::u-page-c-t-a
   ---
   links:
-    - label: Start building
+    - label: Aan de slag
       to: '/getting-started'
       trailingIcon: i-lucide-arrow-right
-    - label: View on GitHub
-      to: 'https://github.com/nuxt-ui-templates/docs'
-      target: _blank
-      variant: subtle
-      icon: i-simple-icons-github
-  title: Ready to build an amazing documentation?
-  description: Join thousands of developers building with Nuxt and Nuxt UI. Get this template and start shipping today.
+  title: Klaar om te beginnen?
+  description: Open een module en duik in de docs, of probeer een interactieve oefening uit een van de Syntax-secties.
   class: dark:bg-neutral-950
   ---
 
