@@ -36,7 +36,11 @@ gh --version
 
 Mis je iets? Installeer eerst voor je verder gaat. Voor WSL: `sudo apt install gh`, daarna `gh auth login`.
 
-## 1. Template clonen
+## 1. Template-files binnenhalen
+
+Twee scenarios afhankelijk van waar je begint. **Scenario B** is wat we voor 1000x gebruiken (bestaande TDD-orphan-branch); Scenario A staat als fallback voor wie écht greenfield begint.
+
+### Scenario A — Greenfield (lege directory, nog geen `.git`)
 
 ```bash
 cd ~/HELL                                                    # of waar je projecten leven
@@ -48,12 +52,63 @@ git init -b main                                             # eigen history beg
 
 Dit is je vertrekpunt. Vanaf nu is dit `1000x`, niet meer een fork van de template.
 
+### Scenario B — Bestaande TDD-orphan-branch (jouw geval)
+
+Als je al een `.git`-history hebt met `TDD/`, `AGENTS.md`, `README.md`, `LICENSE`, `ONBOARDING.md` etc. (bv. omdat je een orphan-branch zoals `xx-init` hebt opgezet voor de planning-fase), wil je de Nuxt-template-files erin mergen zonder je history of bestaande docs te verliezen:
+
+```bash
+# 1. Clone docs-template naar een temp-locatie (shallow — we hoeven geen history)
+cd /tmp
+rm -rf nuxt-docs-template
+git clone --depth 1 https://github.com/nuxt-ui-templates/docs.git nuxt-docs-template
+
+# 2. Rsync de template-content naar onze repo
+#    --ignore-existing → bestaande files in onze repo blijven onaangeroerd
+#    --exclude='.git/' → template's git-history nooit overnemen
+cd ~/HELL/1000x   # of waar de repo woont
+rsync -av --ignore-existing --exclude='.git/' /tmp/nuxt-docs-template/ ./
+
+# 3. Verifieer dat onze TDD/ en agent-docs onaangeroerd zijn
+git status -s | head -20
+
+# 4. Stage en commit de import
+git add -A
+git commit -m "scaffold: import nuxt-ui-docs-template project files"
+
+# 5. Cleanup
+rm -rf /tmp/nuxt-docs-template
+```
+
+**Hoe `--ignore-existing` ons werk doet:**
+
+Rsync checkt per file of 'ie al in onze repo bestaat. Zo ja → skip. Zo nee → kopieer. Geen hardcoded exclude-lijst nodig — automatisch klopt het:
+
+| Onze file (bestaat al) | Wat rsync doet |
+|---|---|
+| `TDD/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `ONBOARDING.md` | Skip — onze versie blijft |
+| `README.md`, `LICENSE`, `.gitignore` | Skip — onze versie blijft |
+| `.claude/` (skills) | Skip — onze skills blijven |
+| `.editorconfig`, `eslint.config.mjs`, `tests/` (als ze al staan) | Skip — bestaande setup blijft |
+| Alles wat in onze repo NIET bestaat | Kopieer uit template |
+
+**Wat er nu wel in zit (uit het template):**
+
+- `app/` — Nuxt source (componenten, layouts, pages)
+- `content/` — markdown demo-content (markdown-rendering test-suite)
+- `public/` — static assets
+- `package.json`, `nuxt.config.ts`, `content.config.ts` — Nuxt-config
+- Alle overige template-files die we nog niet hadden
+
+**Edge case — als je later WEL het template's versie van een specifieke file wilt overnemen** (bv. `.gitignore` mergen met onze test-artifacts ignores): inspecteer `/tmp/nuxt-docs-template/` vóór de cleanup-stap, of clone 'm later opnieuw voor 3-way diff.
+
+### Verifieer (beide scenarios)
+
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open `localhost:3000`. Je ziet de Nuxt UI demo-docs draaien. Klik even rond, zodat je weet wat de template kan voordat je gaat tweaken.
+Open `localhost:3000`. Je ziet de Nuxt UI demo-docs draaien. Klik even rond zodat je weet wat de template kan voordat je gaat tweaken. **Dit is je nieuwe vertrekpunt voor sectie 2 en verder.**
 
 ---
 

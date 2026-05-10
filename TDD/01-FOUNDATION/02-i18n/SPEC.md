@@ -21,5 +21,13 @@ NL als standaardtaal, EN als secundair, voor zowel UI-strings als markdown-conte
 - Lokale drafts (zie View / Edit-toggle met lokale drafts, feature 01 in 03-FEATURES) en lokale tree-mutaties (zie In-app content management, feature 02 in 03-FEATURES) bevatten de taal in hun sleutel zodat NL en EN volledig gescheiden blijven
 - Wanneer een pagina geen versie heeft in de gekozen taal, krijgt de lezer een fallback naar de default-taal met een melding dat de pagina niet in de gewenste taal beschikbaar is
 - Level- en tab-content (zie Levels, customization 04 en Tabs, customization 05 in 02-TEMPLATE) wordt per taal apart bijgehouden; switchen van taal binnen dezelfde level of tab is mogelijk
-- De `nav`-array in een directory's `index.md` (zie Section sidebar, Section sidebar, customization 02 in 02-TEMPLATE) gebruikt slugs zodat de volgorde taal-onafhankelijk is
+- De `nav`-array in een directory's `index.md` (zie Section sidebar, customization 02 in 02-TEMPLATE) gebruikt slugs zodat de volgorde taal-onafhankelijk is
 - De gekozen taal wordt onthouden tussen sessies als gebruiker-voorkeur (zie Settings, feature 03 in 03-FEATURES)
+
+## Constraints
+
+- **Geen runtime-translation-API's of online services** — Nuxt i18n in static mode; vertaling-strings leven in `i18n/locales/{lang}.json` en in markdown-files per taal
+- **Geen automatische machine-translation pipeline** — auteurs schrijven per taal apart en bewust; de architectuur ondersteunt dat zonder code-wijziging
+- **Geen taal-keuze UI in deze customization** — de taalwissel-knop in de header leeft bij Header (customization 03 in 02-TEMPLATE); hier alleen de routing- en content-laag
+- **Geen draft-persistence-laag** — drafts per taal apart-houden is verantwoordelijkheid van View / Edit-toggle (feature 01 in 03-FEATURES); deze customization levert alleen de `{lang}`-conventie voor de keys
+- **Geen meer dan twee talen in de eerste release** — NL + EN. Een derde taal toevoegen werkt zodra de markdown-files en JSON-translations bestaan (geen code-change), maar is bewust niet eerste-release scope
