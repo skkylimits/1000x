@@ -388,6 +388,41 @@ trim_trailing_whitespace = false
 
 Run `pnpm lint:fix` één keer om alle template-files automatisch in onze stijl te brengen. Daarna één commit "chore: align with antfu eslint config".
 
+### Pre-commit hook via `simple-git-hooks`
+
+Hooks zijn declaratief (in `package.json`), nooit handmatig in `.git/hooks/`. Zie `TDD/TOOLING-STRATEGY.md` § Hook-management voor de discipline.
+
+```bash
+pnpm add -D simple-git-hooks lint-staged
+```
+
+In `package.json`:
+
+```json
+{
+	"simple-git-hooks": {
+		"pre-commit": "pnpm lint-staged"
+	},
+	"lint-staged": {
+		"*.{js,ts,vue,jsx,tsx,json,jsonc,yml,yaml}": "eslint --fix"
+	},
+	"scripts": {
+		"postinstall": "simple-git-hooks"
+	}
+}
+```
+
+Run opnieuw `pnpm install` — de `postinstall` registreert nu de hook in `.git/hooks/pre-commit`. Vanaf de volgende commit draait `eslint --fix` automatisch op staged files.
+
+**Tegenkom je een leftover-hook van een eerdere setup?** Symptoom: commit faalt met `pnpm: not found` of een tool die niet in `package.json` staat. Fix:
+
+```bash
+rm .git/hooks/pre-commit
+pnpm install
+```
+
+`simple-git-hooks` regenereert 'm vanaf de declaratieve config.
+
 ---
 
 ## 8. Test-infra — Vitest en Playwright

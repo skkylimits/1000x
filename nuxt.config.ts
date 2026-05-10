@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     '@nuxt/content',
     'nuxt-og-image',
     'nuxt-llms',
-    '@nuxtjs/mcp-toolkit'
+    '@nuxtjs/mcp-toolkit',
+    '@nuxtjs/i18n'
   ],
 
   devtools: {
@@ -63,6 +64,16 @@ export default defineNuxtConfig({
         braceStyle: '1tbs'
       }
     }
+  },
+
+  i18n: {
+    defaultLocale: 'nl',
+    locales: [
+      { code: 'nl', language: 'nl-NL', file: 'nl.json', name: 'Nederlands' },
+      { code: 'en', language: 'en-US', file: 'en.json', name: 'English' }
+    ],
+    strategy: 'no_prefix',
+    detectBrowserLanguage: false
   },
 
   icon: {

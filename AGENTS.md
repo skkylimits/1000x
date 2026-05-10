@@ -113,6 +113,7 @@ Eerste keuze Iconify (`lucide:search`, `tabler:code`, `simple-icons:javascript`)
 - **Geen telemetry in Phase 1**
 - **Geen Pinia vóór feature 02 in 03-FEATURES**
 - **Geen npm of yarn** — pnpm is de package manager
+- **Geen handmatige `.git/hooks/`-files plaatsen** — alle git-hooks worden declaratief beheerd via `simple-git-hooks` in `package.json` (zie `TDD/TOOLING-STRATEGY.md` § Hook-management). Bij broken hooks: stale file verwijderen, `pnpm install` regenereert 'm
 
 # Verification
 

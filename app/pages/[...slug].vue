@@ -7,12 +7,13 @@ definePageMeta({
 })
 
 const route = useRoute()
+const { t } = useI18n()
 const { toc } = useAppConfig()
 const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 
 const { data: page } = await useAsyncData(route.path, () => queryCollection('docs').path(route.path).first())
 if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+  throw createError({ statusCode: 404, statusMessage: t('page.notFound.title'), fatal: true })
 }
 
 const { data: surround } = await useAsyncData(`${route.path}-surround`, () => {
@@ -42,7 +43,7 @@ const links = computed(() => {
   if (toc?.bottom?.edit) {
     links.push({
       icon: 'i-lucide-external-link',
-      label: 'Edit this page',
+      label: t('page.actions.editThisPage'),
       to: `${toc.bottom.edit}/${page?.value?.stem}.${page?.value?.extension}`,
       target: '_blank'
     })

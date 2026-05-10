@@ -5,15 +5,17 @@ defineProps<{
   error: NuxtError
 }>()
 
+const { t, locale } = useI18n()
+
 useHead({
   htmlAttrs: {
-    lang: 'nl'
+    lang: locale
   }
 })
 
 useSeoMeta({
-  title: 'Pagina niet gevonden',
-  description: 'De gevraagde pagina bestaat niet.'
+  title: () => t('page.notFound.title'),
+  description: () => t('page.notFound.description')
 })
 
 const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))

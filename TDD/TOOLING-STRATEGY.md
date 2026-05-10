@@ -53,6 +53,50 @@ Antfu's `formatters.css: true` regelt CSS. Geen aparte tool, geen aparte config,
 
 ---
 
+## Hook-management
+
+Git-hooks worden **declaratief beheerd via `simple-git-hooks`** in `package.json`, niet handmatig in `.git/hooks/`. Setup is reproducible, review-baar en overleeft elke fresh clone.
+
+`package.json`:
+
+```json
+{
+	"simple-git-hooks": {
+		"pre-commit": "pnpm lint-staged"
+	},
+	"lint-staged": {
+		"*.{js,ts,vue,jsx,tsx,json,jsonc,yml,yaml}": "eslint --fix"
+	},
+	"scripts": {
+		"postinstall": "simple-git-hooks"
+	}
+}
+```
+
+`simple-git-hooks` schrijft de hook-files tijdens `postinstall`. De hook roept `lint-staged` aan, dat alleen ESLint-fix draait op staged-files (snel, niet de hele repo). Beide tools zitten in `devDependencies`:
+
+```bash
+pnpm add -D simple-git-hooks lint-staged
+```
+
+**Geen handmatige `.git/hooks/`-files plaatsen**. Symptomen van een leftover-hook (overgebleven uit een eerdere setup of een agent die "fix" handmatig deed): commit faalt met `pnpm: not found` of `lint-staged: not found` op een fresh clone, of de hook draait tools die niet in `package.json` staan.
+
+**Fix bij stale leftover**:
+
+```bash
+rm .git/hooks/pre-commit
+pnpm install   # postinstall regenereert de hook vanaf package.json-config
+```
+
+Waarom declaratief boven handmatig:
+
+- **Reproducible**: package.json is de single source. Iedere clone krijgt dezelfde hook
+- **Review-baar**: hook-config is onderdeel van git-history en PR-diffs; manual hooks zijn onzichtbaar voor code-review
+- **Geen broken tools**: lint-staged + simple-git-hooks zitten in `devDependencies`, dus de hook kan niets aanroepen wat niet geïnstalleerd is
+- **Survives `git rm -rf .git && git init`**: bij een refactor van git-history blijft de hook-config in package.json staan; een handmatige hook moet je opnieuw schrijven
+
+---
+
 ## Concrete configs
 
 ### `.editorconfig`

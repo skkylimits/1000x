@@ -1,0 +1,22 @@
+{
+  "app": {
+    "title": "1000x",
+    "loading": "Loading..."
+  },
+  "page": {
+    "notFound": {
+      "title": "Page not found",
+      "description": "The requested page does not exist."
+    },
+    "actions": {
+      "copyPage": "Copy page",
+      "copyMarkdownLink": "Copy markdown link",
+      "viewAsMarkdown": "View as markdown",
+      "openInChatGPT": "Open in ChatGPT",
+      "openInClaude": "Open in Claude",
+      "openCopyMenu": "Open copy actions menu",
+      "copiedToClipboard": "Copied to clipboard",
+      "editThisPage": "Edit this page"
+    }
+  }
+}

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const { t } = useI18n()
 const { data: page } = await useAsyncData('index', () => queryCollection('landing').path('/').first())
 if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+  throw createError({ statusCode: 404, statusMessage: t('page.notFound.title'), fatal: true })
 }
 
 const title = page.value.seo?.title || page.value.title

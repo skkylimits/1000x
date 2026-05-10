@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { seo } = useAppConfig()
+const { locale } = useI18n()
 
 const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))
 const { data: files } = useLazyAsyncData('search', () => queryCollectionSearchSections('docs'), {
@@ -14,7 +15,7 @@ useHead({
     { rel: 'icon', href: '/favicon.ico' }
   ],
   htmlAttrs: {
-    lang: 'nl'
+    lang: locale
   }
 })
 
