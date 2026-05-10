@@ -2,12 +2,12 @@
 
 ## Project context
 
-This task builds the second implementation step of **template customization 02 — Sidebar replacement** for the 1000x project: an internal "second brain" and interactive learning system, built on the [Nuxt UI docs-template](https://github.com/nuxt-ui-templates/docs) baseline. Dutch is primary, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
+This task builds the second implementation step of **template customization 02 — Section sidebar** for the 1000x project: an internal "second brain" and interactive learning system, built on the [Nuxt UI docs-template](https://github.com/nuxt-ui-templates/docs) baseline. Dutch is primary, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
 
 **Read these documents before starting:**
 
 - `TDD/SPEC.md` — overall product spec. **§ Core Features → 2. Section sidebar** is the conceptual reference (especially the "Active-page indicator — één doorlopende verticale lijn" implementation hint and the consistent-indentation rules)
-- `TDD/FEATURES.md` — feature 2 user flow and UI overview
+- `TDD/FEATURES.md` — Section sidebar, customization 02 in 02-template user flow and UI overview
 - `TDD/02-template/02-section-sidebar/SPEC.md` — this customization in detail. Read **§ Implementation Steps → Step 2** for this task's scope and **§ Constraints** for everything that stays out
 - `AGENTS.md` — established conventions
 
@@ -33,7 +33,7 @@ Replace the docs-template's `<UContentNavigation>`-based sidebar with a scope-bo
 5. Render chapters with their `icon` left of the title and the chevron on the right side of the row
 6. Render orphan pages (children of the scope without a chapter parent) inside the same indented container as a chapter's children — as if there is an invisible default chapter
 7. Continuous active-line: every page-link gets a `border-left` (1.5px); inactive uses the tertiary border colour from Nuxt UI tokens, the active page swaps to the info colour. No `border-left` on the container wrapper; no vertical margin between items
-8. Variant-collapse rendering: a node with `meta.variants.length > 0` shows as **one** sidebar entry — no per-variant entries, no inline tabs (the variant tab UI lives in feature 8)
+8. Variant-collapse rendering: a node with `meta.variants.length > 0` shows as **one** sidebar entry — no per-variant entries, no inline tabs (the variant tab UI lives in Levels (customization 04) en Tabs (customization 05) in 02-template)
 9. `aria-current="page"` on the active page-link
 10. Mount `<SectionSidebar />` in `app/layouts/docs.vue`, fully replacing the existing `<UContentNavigation>` invocation
 11. Playwright E2E coverage in `tests/e2e/sidebar.spec.ts` — at minimum the assertions listed under **Acceptance criteria** below
@@ -350,7 +350,7 @@ Adapt the selectors to match the actual demo content structure as you implement.
 
 - ❌ **Do not** add localStorage, cookie, or any persistence wiring — Step 3 owns that
 - ❌ **Do not** add roving tabindex, arrow-key handlers, or keyboard handlers beyond the native button/link behaviour — Step 3
-- ❌ **Do not** add a variant-tab UI inside any sidebar entry — feature 8
+- ❌ **Do not** add a variant-tab UI inside any sidebar entry — Levels (customization 04) en Tabs (customization 05) in 02-template
 - ❌ **Do not** add a search input, command palette trigger, theme toggle, locale switcher, settings link, breadcrumb, or any other surface inside the sidebar — those live in features 9, 12, 4, 6, 5
 - ❌ **Do not** implement accordion-mode (auto-collapse siblings). The SPEC explicitly allows multiple chapters expanded
 - ❌ **Do not** make the scope-label sticky during scroll

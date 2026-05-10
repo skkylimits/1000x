@@ -2,7 +2,7 @@
 
 ## Summary
 
-Code-editor als panel-optie in de panel-switcher (zie Rechter panel met conditionele panel-switcher en smart ToC, feature 5) op pagina's met een programmeertaal of code-use-case; alle execution draait client-side zonder sandbox-backend. Iedere hoofdstukpagina kan een challenge bevatten met directe pass/fail-feedback. Voor lezers die programmeren en security willen oefenen in de browser.
+Code-editor als panel-optie in de panel-switcher (zie Right panel en Smart ToC, customizations 07 en 08 in 02-template) op pagina's met een programmeertaal of code-use-case; alle execution draait client-side zonder sandbox-backend. Iedere hoofdstukpagina kan een challenge bevatten met directe pass/fail-feedback. Voor lezers die programmeren en security willen oefenen in de browser.
 
 ## Goals
 
@@ -10,7 +10,7 @@ Code-editor als panel-optie in de panel-switcher (zie Rechter panel met conditio
 - Iedere taal die wordt toegevoegd kiest zelf de runtime; één faalde runtime raakt geen andere talen
 - Challenges geven directe pass/fail-feedback zodat oefenen iteratief is
 - User-code kan geen netwerkaanvallen of data-exfiltratie uitvoeren tegen de host
-- De editor blijft offline werken zodra de runtime is gecached (zie PWA en offline-werking, feature 17)
+- De editor blijft offline werken zodra de runtime is gecached (zie PWA en offline-werking, feature 08 in 03-features)
 
 ## Requirements
 
@@ -25,6 +25,6 @@ Code-editor als panel-optie in de panel-switcher (zie Rechter panel met conditio
 - User-code heeft geen netwerk-toegang in de eerste release: `fetch`, `XMLHttpRequest` en sockets zijn geblokkeerd in de execution-omgeving
 - Voor talen met een package-ecosysteem geldt een whitelist van vooraf goedgekeurde packages; imports buiten de whitelist worden geweigerd
 - De content-security policy van de site is strikt over `connect-src` (alleen eigen origin en de AI-route); user-code kan geen externe origin bereiken
-- Editor-voorkeuren (fontgrootte, regel-hoogte, tab-size, optionele vim-mode) zijn instelbaar via Settings (zie Settings, feature 12)
-- Op mobiel wordt de editor full-screen zodat de gebruiker genoeg ruimte heeft om te typen (zie Mobiele layout, feature 16)
+- Editor-voorkeuren (fontgrootte, regel-hoogte, tab-size, optionele vim-mode) zijn instelbaar via Settings (zie Settings, feature 03 in 03-features)
+- Op mobiel wordt de editor full-screen zodat de gebruiker genoeg ruimte heeft om te typen (zie Mobiele layout, feature 07 in 03-features)
 - Iedere editor-actie en run-knop is toetsenbord-bedienbaar (WCAG 2.1 AA)

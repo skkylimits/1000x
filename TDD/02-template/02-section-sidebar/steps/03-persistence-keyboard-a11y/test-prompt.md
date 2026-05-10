@@ -2,7 +2,7 @@
 
 ## Project context
 
-This task writes the **tests** for the third (and final) implementation step of **template customization 02 — Sidebar replacement** for the 1000x project. Dutch is the primary language, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
+This task writes the **tests** for the third (and final) implementation step of **template customization 02 — Section sidebar** for the 1000x project. Dutch is the primary language, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
 
 **Read these documents before starting:**
 
@@ -92,7 +92,7 @@ Behaviour rules — the unit tests assert these:
 - `get<T>(key, defaultValue)` returns the parsed JSON value when the key exists; returns `defaultValue` when the key is absent
 - `get` returns `defaultValue` and does not throw when the stored value is malformed JSON
 - `set<T>(key, value)` stores the value as JSON under the namespaced key
-- `set` swallows `QuotaExceededError` and any other write error silently; the user-facing banner for quota issues belongs to feature 10
+- `set` swallows `QuotaExceededError` and any other write error silently; the user-facing banner for quota issues belongs to feature 01 in 03-features
 - `remove(key)` deletes the namespaced key from localStorage; calling it for an absent key is a no-op
 - All three methods are no-ops when `window` or `window.localStorage` is unavailable (SSR-safe)
 

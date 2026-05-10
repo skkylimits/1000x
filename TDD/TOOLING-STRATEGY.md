@@ -233,7 +233,7 @@ In `AGENTS.md` (en daarmee in `CLAUDE.md` / `GEMINI.md` via de pointers) hoort d
 - Vue SFCs: `<script setup lang="ts">`, Composition API alleen.
 - Imports: gebruik bestaande aliassen (`~/`, `#imports`), geen relatieve `../../`-paden.
 - Bestandsnamen: `kebab-case.vue` / `kebab-case.ts` voor utilities/composables, `PascalCase.vue` voor components.
-- Iconen: alléén via `<Icon name="lucide:..." />` — geen inline `<svg>` tenzij echt geen Iconify-equivalent bestaat (zie `spec.md` feature 1).
+- Iconen: alléén via `<Icon name="lucide:..." />` — geen inline `<svg>` tenzij echt geen Iconify-equivalent bestaat (zie `spec.md` Markdown rendering, customization 01 in 02-template).
 - Markdown content in `content/` wordt **niet** gelint of geformatteerd. Niet aanraken zonder expliciete user-instructie.
 
 Bij twijfel: `pnpm lint --fix` draaien, niet handmatig fixen.

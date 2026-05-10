@@ -15,11 +15,9 @@
 > - E2E: `Enter` op een page-link navigeert
 > - E2E: focus-visible ring is zichtbaar op het gefocuste item
 > - Unit / integration: `useSidebarCollapse()` schrijft via `settingsStore`,
->   niet rechtstreeks naar `localStorage`, zodat feature 12 dezelfde interface
+>   niet rechtstreeks naar `localStorage`, zodat feature 03 in 03-features dezelfde interface
 >   kan hergebruiken
 > - A11y: `aria-current="page"` op actief link, accessible names op alle
 >   interactieve elementen, geen tooltip-overlay
 >
-> Format-referentie:
-> [`TDD/features/01-markdown-rendering/steps/01-base-rendering/test-plan.md`](../../../../features/01-markdown-rendering/steps/01-base-rendering/test-plan.md)
-> op de `01-markdown-rendering` branch.
+> Format-referentie: `TDD/features/01-markdown-rendering/steps/01-base-rendering/test-plan.md` op de `01-markdown-rendering` branch (de oude features-folder bestond daar nog; de file dient als format-voorbeeld voor test-plan.md's).

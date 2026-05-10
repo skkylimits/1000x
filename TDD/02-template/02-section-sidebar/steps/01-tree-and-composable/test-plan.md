@@ -117,7 +117,7 @@ Niet akkoord met één van deze keuzes? → flag in de review en de implementati
 
 - Geen UI-rendering — `SectionSidebar.vue` blijft op zijn hardcoded chapters draaien (Stap 2)
 - Geen persistence, keyboard navigation of WCAG-uitwerking (Stap 3)
-- Geen overlay-merge of write-side state (feature 11)
-- Geen variant-tab UI in de sub-header (feature 8) — alleen `meta.variants[]` is gevuld
+- Geen overlay-merge of write-side state (feature 02 in 03-features)
+- Geen variant-tab UI in de sub-header (Levels (customization 04) en Tabs (customization 05) in 02-template) — alleen `meta.variants[]` is gevuld
 - Geen integration-tests tegen de echte Nuxt Content collection — fixtures only
 - Geen Playwright entries

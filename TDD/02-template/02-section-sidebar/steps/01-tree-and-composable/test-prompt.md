@@ -2,7 +2,7 @@
 
 ## Project context
 
-This task writes the **tests** for the first implementation step of **template customization 02 — Sidebar replacement** for the 1000x project. Dutch is the primary language, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
+This task writes the **tests** for the first implementation step of **template customization 02 — Section sidebar** for the 1000x project. Dutch is the primary language, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
 
 **Read these documents before starting:**
 

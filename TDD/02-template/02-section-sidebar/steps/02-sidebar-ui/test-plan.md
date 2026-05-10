@@ -19,6 +19,4 @@
 > - Geen import van het oude template-sidebar-component meer in de codebase
 >   (CI-check of ESLint-rule)
 >
-> Format-referentie:
-> [`TDD/features/01-markdown-rendering/steps/01-base-rendering/test-plan.md`](../../../../features/01-markdown-rendering/steps/01-base-rendering/test-plan.md)
-> op de `01-markdown-rendering` branch.
+> Format-referentie: `TDD/features/01-markdown-rendering/steps/01-base-rendering/test-plan.md` op de `01-markdown-rendering` branch (de oude features-folder bestond daar nog; de file dient als format-voorbeeld voor test-plan.md's).

@@ -1,6 +1,6 @@
 # 1000x — Scaffolding (template-aanpak)
 
-> Setup-instructies om vanaf nul tot een gebrand, draaiend 1000x-project te komen op basis van de **Nuxt UI docs-template**. Aan het eind van dit document heb je een werkende site met 1000x-branding, NL/EN i18n, het uitgebreide content-schema, en een eerste eigen pagina. Geen scope-bound sidebar, geen variant-tabs, geen layout-chrome — die komen in de _customizations_-fase, zie `template/`.
+> Setup-instructies om vanaf nul tot een gebrand, draaiend 1000x-project te komen op basis van de **Nuxt UI docs-template**. Aan het eind van dit document heb je een werkende site met 1000x-branding, NL/EN i18n, het uitgebreide content-schema, en een eerste eigen pagina. Geen scope-bound sidebar, geen levels of tabs, geen layout-chrome — die komen in de _customizations_-fase, zie `02-template/`.
 
 > **Niet vergeten**: dit is een fundamentele wijziging ten opzichte van de oorspronkelijke scratch-aanpak. Die blijft beschikbaar als referentie in `archief/`, maar wordt niet meer gevolgd.
 
@@ -12,9 +12,9 @@ De Nuxt UI docs-template levert al een hoop dat in onze spec staat — markdown 
 
 Drie soorten werk staan naast elkaar in dit project, en het is belangrijk dat je weet wat waar hoort:
 
-1. **Foundation** — dit document. Eénmalig, branding, i18n, schema, AI-context. Niet feature-bound.
-2. **Template customizations** — in `template/`. Aanpassingen waar de template iets anders doet dan onze spec voorschrijft (bv. sidebar, layout-chrome, search).
-3. **Eigen features** — in `features/`. Onze 21 features die niet uit de template komen (code-editor, card-trainer, AI-assistent, etc.).
+1. **Foundation** (`01-foundation/`) — dit document. Eénmalig: branding, i18n, schema, AI-context, content-stubs. Niet feature-bound.
+2. **Template customizations** (`02-template/`) — dertien customizations waar de Nuxt UI docs-template of Nuxt Content iets anders doet dan onze spec voorschrijft (sidebar, header, levels, tabs, page-chrome, right-panel, smart-toc, changelog, prev-next, search, math/diagrammen, image-lightbox).
+3. **Eigen features** (`03-features/`) — tien features die de template niet levert (code-editor, card-trainer, AI-assistent, etc.) en doorgaans nieuwe libraries of state-management meebrengen.
 
 ---
 
@@ -99,7 +99,7 @@ seo: {
 },
 ```
 
-En voeg de noindex-headers toe (1000x is auth-gated, niet voor zoekmachines — zie spec feature 18):
+En voeg de noindex-headers toe (1000x is auth-gated, niet voor zoekmachines — zie spec feature 09 in 03-features):
 
 ```ts
 routeRules: {
@@ -188,15 +188,12 @@ export const contentSchema = z.object({
 	icon: z.string().optional(),
 
 	// 1000x-specifiek:
-	scope: z.enum(['self', 'children']).optional(),    // sidebar scope-binding (feature 2)
-	nav: z.array(z.string()).optional(),                // didactische volgorde (feature 19)
-	order: z.number().optional(),
-	variants: z.array(z.object({                        // variant-tabs (feature 8)
-		id: z.string(),
-		label: z.string(),
-		icon: z.string(),
-	})).optional(),
-	schemaVersion: z.number().default(1),               // forward compat (feature 1)
+	scope: z.enum(['self', 'children']).optional(),                  // sidebar scope-binding (Section sidebar, customization 02 in 02-template)
+	nav: z.array(z.string()).optional(),                             // didactische volgorde van children (slugs)
+	order: z.number().optional(),                                     // escape-hatch voor individuele page-volgorde
+	levels: z.union([z.boolean(), z.array(z.string())]).optional(),  // levels-container — folder-based section variants (Levels, customization 04 in 02-template)
+	tabs: z.union([z.boolean(), z.array(z.string())]).optional(),    // tabs-container — file-based directory tabs (Tabs, customization 05 in 02-template)
+	schemaVersion: z.number().default(1),                             // forward compat
 })
 
 export default defineContentConfig({
@@ -213,7 +210,7 @@ export default defineContentConfig({
 Twee dingen om bewust te zijn:
 
 - **Named export `contentSchema`** zodat unit-tests het schema kunnen importeren (zie test-plan zodra we Stap 1 testen schrijven)
-- **`schemaVersion` heeft een default** — bestaande markdown-files zonder dat veld blijven werken. Migrators komen pas wanneer we de eerste breaking change doorvoeren (zie spec feature 1)
+- **`schemaVersion` heeft een default** — bestaande markdown-files zonder dat veld blijven werken. Migrators komen pas wanneer we de eerste breaking change doorvoeren (zie Markdown rendering, customization 01 in 02-template)
 
 ---
 
@@ -232,7 +229,7 @@ Belangrijk voor latere Claude Code sessies, Cursor, Codex etc. Niet skippen — 
 
 **1000x** — bedrijfsbreed second-brain dat documentatiesite, wiki en interactief leersysteem combineert. Doelpubliek: intern, werknemers. Niet voor publiek of zoekmachines. Gebouwd op de Nuxt UI docs-template als baseline.
 
-Zie `spec.md` voor de volledige product-specificatie, `features.md` voor de implementatie-volgorde, `template/` voor wijzigingen op de template-baseline, en `features/` voor alle 21 feature-specs.
+Zie `SPEC.md` voor de volledige product-specificatie, `FEATURES.md` voor de drie-stage roadmap, `02-template/` voor customizations bovenop de docs-template, en `03-features/` voor de tien echte features.
 
 ## Stack
 
@@ -253,9 +250,9 @@ Zie `spec.md` voor de volledige product-specificatie, `features.md` voor de impl
 
 Wanneer een task binnenkomt, classificeer hem eerst:
 
-1. **Foundation** (`SCAFFOLDING.md`) — éénmalig setup: branding, i18n, schema, AGENTS, deployment
-2. **Template customization** (`template/`) — aanpassen wat de template levert: sidebar, layout-chrome, search, etc.
-3. **Eigen feature** (`features/`) — bouwen wat de template niet heeft: code-editor, card-trainer, AI-assistent, etc.
+1. **Foundation** (`01-foundation/`) — éénmalig setup: branding, i18n, schema, AGENTS, deployment, content-stubs
+2. **Template customization** (`02-template/`) — aanpassen wat de template of Nuxt Content levert: sidebar, header, levels, tabs, page-chrome, right-panel, smart-toc, changelog, prev-next, search, math/diagrammen, image-lightbox
+3. **Eigen feature** (`03-features/`) — bouwen wat de template niet heeft: code-editor, card-trainer, AI-assistent, etc.
 
 Niet door elkaar halen. Een PR die zowel foundation als customizations als feature-werk doet wordt afgewezen.
 
@@ -428,14 +425,14 @@ Refresh `localhost:3000` — je zou nu een gebrand 1000x-project moeten zien met
 
 ## Wat hierna
 
-Foundation is klaar. Volgende fase: `template/`. Per customization één PR met scope, beschrijving en tests.
+Foundation is klaar. Volgende fase: `02-template/`. Per customization één PR met scope, beschrijving en tests.
 
 Eerste twee customizations om te overwegen:
 
 1. **`01-branding.md`** — als je in deze foundation-fase iets bent vergeten of fijn-tuner wilt zijn
 2. **`02-content-schema.md`** — uitwerken hoe `scope`, `nav` etc. visueel werken in de bestaande template-sidebar voordat we 'm vervangen
 
-Daarna de grotere customizations (sidebar-replacement, layout-chrome, smart toc, search-scope-filter), en pas dán de echte 1000x-features uit `features/`.
+Daarna de grotere customizations (section-sidebar, header, levels, tabs, page-chrome, right-panel, smart-toc, changelog, prev-next, search), en pas dán de echte 1000x-features uit `03-features/`.
 
 ---
 
@@ -457,11 +454,11 @@ Te verwachten dingen die de template-aanpak met zich meebrengt:
 
 ## Wat dit document NIET dekt
 
-- Sidebar replacement (template)
+- Section sidebar (template)
 - Layout chrome (template)
 - Smart toc, scope-bound search (template)
-- Eigen features zoals code-editor, card-trainer, AI-assistent (`features/`)
-- Auth-gate / private deployment (feature 18)
-- Content-management UI (feature 11)
+- Eigen features zoals code-editor, card-trainer, AI-assistent (`03-features/`)
+- Auth-gate / private deployment (feature 09 in 03-features)
+- Content-management UI (feature 02 in 03-features)
 
 Die zitten allemaal in latere fases. Foundation gaat alleen over: hoe krijg ik een gebrand, draaiend project waar al het andere op kan voortbouwen.

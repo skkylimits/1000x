@@ -2,7 +2,7 @@
 
 ## Summary
 
-YouTube-stijl comments met threaded replies, likes en sortering op _Top_ of _Newest_, beschikbaar als panel-optie (zie Rechter panel met conditionele panel-switcher en smart ToC, feature 5). Bedoeld voor vragen, feedback en stemmen op verbetersuggesties via de like-functie.
+YouTube-stijl comments met threaded replies, likes en sortering op _Top_ of _Newest_, beschikbaar als panel-optie (zie Right panel en Smart ToC, customizations 07 en 08 in 02-template). Bedoeld voor vragen, feedback en stemmen op verbetersuggesties via de like-functie.
 
 ## Goals
 
@@ -22,4 +22,4 @@ YouTube-stijl comments met threaded replies, likes en sortering op _Top_ of _New
 - De backend-keuze (eigen backend, externe service, etc.) wordt later gemaakt; de frontend-component is daarvoor agnostisch
 - Moderation-functionaliteit (verwijderen, rapporteren, markeren) is in de huidige scope niet vereist en komt pas zodra de gebruikersgroep daarom vraagt
 - Iedere comment-actie en sorteer-tab is toetsenbord-bedienbaar (WCAG 2.1 AA)
-- Op mobiel werkt het panel volgens de mobiele layout (zie Mobiele layout, feature 16)
+- Op mobiel werkt het panel volgens de mobiele layout (zie Mobiele layout, feature 07 in 03-features)

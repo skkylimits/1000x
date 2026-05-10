@@ -14,11 +14,11 @@ Iedere pagina heeft een live markdown-editor in edit-modus; alle wijzigingen wor
 
 ## Requirements
 
-- De View/Edit-toggle in de pagina-actiebalk (zie Pagina-actiebalk, feature 7) wisselt de pagina tussen gerenderde view en een live markdown-editor
-- Edits worden continu lokaal in de browser bewaard per pagina én per taal (zie Internationalisatie, feature 4); een NL-edit raakt nooit de EN-versie en omgekeerd
+- De View/Edit-toggle in de pagina-actiebalk (zie Page chrome, customization 06 in 02-template) wisselt de pagina tussen gerenderde view en een live markdown-editor
+- Edits worden continu lokaal in de browser bewaard per pagina én per taal (zie Internationalisatie, i18n, customization 02 in 01-foundation); een NL-edit raakt nooit de EN-versie en omgekeerd
 - Na refresh, browser-restart of paginawissel komt een lopende draft automatisch terug; een banner _"je hebt onopgeslagen wijzigingen"_ blijft zichtbaar tot de gebruiker hem reset
 - Bij volle lokale opslag (quota exceeded) verschijnt een melding _"lokale opslag vol — exporteer je werk of wis oude drafts"_ met directe acties zodat geen werk verloren gaat
-- Vanuit Settings (zie Settings, feature 12) kan de gebruiker alle drafts en lokale tree-mutaties (zie In-app content management, feature 11) exporteren als één ZIP in een gedocumenteerd JSON-formaat met versie en payload
+- Vanuit Settings (zie Settings, feature 03 in 03-features) kan de gebruiker alle drafts en lokale tree-mutaties (zie In-app content management, feature 02 in 03-features) exporteren als één ZIP in een gedocumenteerd JSON-formaat met versie en payload
 - Vanuit Settings kan de gebruiker een eerder geëxporteerde ZIP importeren; conflict-strategie is dat bestaande lokale items winnen en geïmporteerde items met dezelfde sleutel onder een suffix worden bewaard zodat niets stilletjes overschreven wordt
 - Export/import dekt ook scenario's waarin een gebruiker browser-data wist, een ander apparaat gebruikt of werk wil delen met een collega
 - De storage-laag is ontworpen zodat een latere migratie naar een grotere browser-storage geen sleutel- of datamodel-wijziging vereist

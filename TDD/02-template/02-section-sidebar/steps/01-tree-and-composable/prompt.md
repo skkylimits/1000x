@@ -2,20 +2,20 @@
 
 ## Project context
 
-This task builds the first implementation step of **template customization 02 — Sidebar replacement** for the 1000x project: an internal "second brain" and interactive learning system. Dutch is the primary language, English secondary. The project is built on the [Nuxt UI docs-template](https://github.com/nuxt-ui-templates/docs) as baseline, with our customizations and features layered on top.
+This task builds the first implementation step of **template customization 02 — Section sidebar** for the 1000x project: an internal "second brain" and interactive learning system. Dutch is the primary language, English secondary. The project is built on the [Nuxt UI docs-template](https://github.com/nuxt-ui-templates/docs) as baseline, with our customizations and features layered on top.
 
 The brand "1000x" displays with the leading `1` in red and `000x` in default foreground. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier. Project AI context lives canonically in `AGENTS.md` at the project root.
 
 **Read these documents before starting:**
 
 - `TDD/SPEC.md` — overall product spec, including Technical Stack and the project-wide rule that Nuxt UI v4 is consulted first for every UI element. Pay special attention to **§ Core Features → 2. Section sidebar** for the conceptual model
-- `TDD/FEATURES.md` — overview of all 21 features and the implementation order
+- `TDD/FEATURES.md` — drie-stage roadmap (foundation, template, features) and the implementation order
 - `TDD/02-template/02-section-sidebar/SPEC.md` — this customization in detail. Read **§ Implementation Steps → Step 1** for the precise scope of this task, and **§ Constraints** for what stays out
 - `AGENTS.md` — established conventions (component lookup order, icon strategy, content rules, "niet doen"-list)
 
 The architectural choice that shapes this step:
 
-- **Read-side blijft composable, write-side komt pas in feature 11.** The single source for all nav-surfaces is the composable `useNavTree()` — no Pinia, no Vuex, no other state-manager in this step. The `buildTree` function takes an optional `overlay` parameter that stays empty here; feature 11 (In-app content management) introduces the Pinia store that fills it.
+- **Read-side blijft composable, write-side komt pas in feature 02 in 03-features.** The single source for all nav-surfaces is the composable `useNavTree()` — no Pinia, no Vuex, no other state-manager in this step. The `buildTree` function takes an optional `overlay` parameter that stays empty here; feature 02 in 03-features (In-app content management) introduces the Pinia store that fills it.
 
 ## Task
 
@@ -121,7 +121,7 @@ export interface NavTree {
 	lookup: Map<string, NavNode>
 }
 
-/** Overlay shape — placeholder for feature 11. Stays empty in Step 1 */
+/** Overlay shape — placeholder for feature 02 in 03-features. Stays empty in Step 1 */
 export type NavOverlay = Record<string, never>
 ```
 
@@ -183,7 +183,7 @@ Use the runtime fields you actually find on pages — don't over-specify. `_id` 
 4. Apply the order resolver per directory: if `index.md` declares `nav: [...]`, sort children to match (slugs not in the array fall to the tail in alphabetical order); else sort by `order: N` ascending; else alphabetical on `title`.
 5. Validate: any directory node that is a scope-label (`scope === 'self'` or `scope === 'children'`) **must** have `icon`; any directory node with at least one child page (a "chapter") must have `icon`. Missing → `throw new Error(\`buildTree: missing required \\\`icon\\\` on \${path} (declared in \${sourceFile})\`)`.
 6. Build the flat `lookup` map keyed by `path` while you build.
-7. The `overlay` parameter is reserved for feature 11. In Step 1, treat any non-empty overlay as a no-op (don't error, just ignore its contents) — feature 11 will replace the body of this branch.
+7. The `overlay` parameter is reserved for feature 02 in 03-features. In Step 1, treat any non-empty overlay as a no-op (don't error, just ignore its contents) — feature 02 in 03-features will replace the body of this branch.
 
 **`walkScope` algorithm:**
 
@@ -368,7 +368,7 @@ describe('buildTree — basic shape', () => {
 
 - ❌ **Do not** modify `app/components/layout/SectionSidebar.vue`, any other layout component, or any page — Step 2 owns the UI replacement
 - ❌ **Do not** add a Pinia store, a Vuex store, or any other state-manager dependency — read-side stays composable
-- ❌ **Do not** add VueUse for the localStorage wrapper or anything else in this step — feature 11 introduces persistence
+- ❌ **Do not** add VueUse for the localStorage wrapper or anything else in this step — feature 02 in 03-features introduces persistence
 - ❌ **Do not** create plugins (`app/plugins/`) — `useAsyncData` inside the composable is sufficient
 - ❌ **Do not** add the actual rendering of breadcrumb / prev-next as components in this step — those features (5 and 6) consume the composables later
 - ❌ **Do not** parse or honour `.navigation.yml` — the demo content's `.navigation.yml` files are ignored. Build only from filesystem + frontmatter
@@ -376,8 +376,8 @@ describe('buildTree — basic shape', () => {
 - ❌ **Do not** introduce a "swappable storage adapter", a generic `<Tree>` component, an event-bus, or a provider pattern — abstraction comes only at second concrete use
 - ❌ **Do not** add Zod validation across the entire tree — frontmatter is already validated at the content layer; `buildTree`'s only validation is the `icon`-on-chapter-or-scope rule
 - ❌ **Do not** memoize or cache results inside `buildTree` itself — `useAsyncData`'s cache is the only cache. Pure function in, pure function out
-- ❌ **Do not** anticipate the overlay-merge from feature 11 beyond the `overlay` parameter signature — body of that branch stays empty/no-op
-- ❌ **Do not** anticipate the variant-tab UI from feature 8 — surface variants only via `meta.variants[]`
+- ❌ **Do not** anticipate the overlay-merge from feature 02 in 03-features beyond the `overlay` parameter signature — body of that branch stays empty/no-op
+- ❌ **Do not** anticipate the variant-tab UI from Levels (customization 04) en Tabs (customization 05) in 02-template — surface variants only via `meta.variants[]`
 - ❌ **Do not** wire `useNavTree()` into any existing component, layout, or page in this step
 - ❌ **Do not** skip the unit tests — the SPEC defines them as the green-criteria for Step 1
 

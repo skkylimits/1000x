@@ -2,13 +2,13 @@
 
 ## Project context
 
-This task closes out **template customization 02 — Sidebar replacement** for the 1000x project: an internal "second brain" and interactive learning system, built on the [Nuxt UI docs-template](https://github.com/nuxt-ui-templates/docs) baseline. Dutch is primary, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
+This task closes out **template customization 02 — Section sidebar** for the 1000x project: an internal "second brain" and interactive learning system, built on the [Nuxt UI docs-template](https://github.com/nuxt-ui-templates/docs) baseline. Dutch is primary, English secondary. Code style follows `@antfu/eslint-config` via `@nuxt/eslint` — tabs, single quotes, no semicolons, no Prettier.
 
 **Read these documents before starting:**
 
 - `TDD/SPEC.md` — overall product spec, especially **§ 12. Settings** for the localStorage `ui:{key}` convention, and the cross-cutting WCAG 2.1 AA requirement
 - `TDD/02-template/02-section-sidebar/SPEC.md` — this customization in detail. Read **§ Implementation Steps → Step 3** for this task's scope and **§ Constraints** for what stays out
-- `TDD/03-features/03-settings/SPEC.md` — the future feature that will reuse the `settingsStore` interface introduced here. The interface must be designed so feature 12 can adopt it without rewriting Step 3's code
+- `TDD/03-features/03-settings/SPEC.md` — the future feature that will reuse the `settingsStore` interface introduced here. The interface must be designed so feature 03 in 03-features can adopt it without rewriting Step 3's code
 - `AGENTS.md` — conventions, including the `ui:{key}` localStorage scheme and the no-VueUse rule for this customization
 
 **Steps 1 and 2 are complete.** The data layer ships:
@@ -46,9 +46,9 @@ Three interlocking pieces:
 
 **Out of scope for this step (assigned to other features — do not anticipate):**
 
-- Drag-and-drop reordering — feature 11
+- Drag-and-drop reordering — feature 02 in 03-features
 - Inline rename / context menu actions — features 10 and 11
-- Migration of the `settingsStore` adapter from localStorage to IndexedDB — phase-2 of feature 10/11/12
+- Migration of the `settingsStore` adapter from localStorage to IndexedDB — phase-2 of feature 01 in 03-features/11/12
 - Migration of UI-state from localStorage to a user profile — phase 3, IAM-dependent
 - Anything in `§ Constraints` of the customization SPEC
 
@@ -73,7 +73,7 @@ Tab through the sidebar with the keyboard. Note that today every chapter button 
 ```
 app/
 ├── utils/
-│   └── settingsStore.ts                         ← NEW: generic localStorage-backed key-value store with stable interface for feature 12
+│   └── settingsStore.ts                         ← NEW: generic localStorage-backed key-value store with stable interface for feature 03 in 03-features
 ├── composables/
 │   └── useSidebarCollapse.ts                    ← NEW: reactive collapse state per chapter path, hydrates from settingsStore
 └── components/
@@ -94,7 +94,7 @@ Do **not** add new dependencies for the persistence or keyboard work. `@axe-core
 
 ### `app/utils/settingsStore.ts`
 
-A small, intentionally generic interface so feature 12 (Settings) can adopt it. Default adapter writes to `localStorage` under the `ui:` prefix. SSR-safe — reads return the provided default if `localStorage` is unavailable; writes silently no-op on the server.
+A small, intentionally generic interface so feature 03 in 03-features (Settings) can adopt it. Default adapter writes to `localStorage` under the `ui:` prefix. SSR-safe — reads return the provided default if `localStorage` is unavailable; writes silently no-op on the server.
 
 ```ts
 export interface SettingsStore {
@@ -132,7 +132,7 @@ export function createLocalStorageStore(): SettingsStore {
 			}
 			catch {
 				// QuotaExceededError or storage disabled — silently swallow.
-				// A user-facing banner for quota issues is feature 10's job.
+				// A user-facing banner for quota issues is feature 01 in 03-features's job.
 			}
 		},
 		remove(key: string) {
@@ -152,7 +152,7 @@ export const settingsStore: SettingsStore = createLocalStorageStore()
 
 Notes:
 
-- The `SettingsStore` interface is the contract feature 12 will reuse. Keep it minimal — just `get` / `set` / `remove`. No batch operations, no schema validation, no events. Add those only when feature 12 has a concrete need
+- The `SettingsStore` interface is the contract feature 03 in 03-features will reuse. Keep it minimal — just `get` / `set` / `remove`. No batch operations, no schema validation, no events. Add those only when feature 03 in 03-features has a concrete need
 - The `ui:` namespace matches `TDD/SPEC.md` § Settings. Do not change it
 - The adapter is `localStorage` only in this step. The IndexedDB migration is phase 2 and lives behind the same interface
 
@@ -482,13 +482,13 @@ If time permits, add `@axe-core/playwright` and run it over a couple of represen
 ## What NOT to do
 
 - ❌ **Do not** import `vueuse`, `@vueuse/core`, or any other state/storage helper. `useState` plus `settingsStore` is the whole stack
-- ❌ **Do not** write directly to `localStorage` from the composable or component — go through `settingsStore` so feature 12 can swap the adapter later
-- ❌ **Do not** add Pinia or any other state-manager. The write-side store comes in feature 11; sidebar collapse is a user preference, not a content mutation
+- ❌ **Do not** write directly to `localStorage` from the composable or component — go through `settingsStore` so feature 03 in 03-features can swap the adapter later
+- ❌ **Do not** add Pinia or any other state-manager. The write-side store comes in feature 02 in 03-features; sidebar collapse is a user preference, not a content mutation
 - ❌ **Do not** change the `ui:` namespace prefix — `TDD/SPEC.md` § Settings fixes it
 - ❌ **Do not** add accordion-mode behaviour
 - ❌ **Do not** add `role="tree"`, `aria-level`, `aria-setsize`, `aria-owns`, or any other tree-specific ARIA. The sidebar is a `<nav>` with buttons and links — that markup is already accessible
 - ❌ **Do not** add tooltips on icons or chapter rows
-- ❌ **Do not** add a separate "settings panel" UI here; this step only ships the storage interface that feature 12 will reuse
+- ❌ **Do not** add a separate "settings panel" UI here; this step only ships the storage interface that feature 03 in 03-features will reuse
 - ❌ **Do not** auto-collapse all chapters on first visit — the default is expanded
 - ❌ **Do not** use intersection observers to auto-scroll to the active item. If scroll-to-active is needed, use a single `scrollIntoView({ block: 'nearest' })` call on mount
 - ❌ **Do not** edit `app/utils/nav.ts` or any composable from Step 1
@@ -505,4 +505,4 @@ If time permits, add `@axe-core/playwright` and run it over a couple of represen
    - Any deviations from this prompt with reasoning
    - Confirmation that no new dependencies (besides optional axe) landed in `package.json`
 
-3. Stop. Customization 02 (Sidebar replacement) is complete. The next customization or feature is the user's call.
+3. Stop. Customization 02 (Section sidebar) is complete. The next customization or feature is the user's call.

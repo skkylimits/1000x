@@ -6,10 +6,11 @@ customizations en eigen features in latere fases.
 Lees deze files volledig voordat je begint:
 
 - TDD/SPEC.md — productspec, wat het systeem moet doen
-- TDD/FEATURES.md — overzicht van de 21 features met user flows en UI overviews
-- TDD/SCAFFOLDING.md — stap-voor-stap foundation setup, dit is je primaire
+- TDD/FEATURES.md — drie-stage roadmap: foundation (4 items), template (13 customizations), features (10 items)
+- TDD/ARCHITECTURE.md — twee scalability-regels en het Pinia-migratiepath
+- TDD/01-foundation/SCAFFOLDING.md — stap-voor-stap foundation setup, dit is je primaire
   bron van waarheid voor wat je gaat doen
-- TDD/template/README.md — uitleg waar template-customizations passen (niet
+- TDD/02-template/README.md — uitleg waar template-customizations passen (niet
   in deze fase, maar voor context)
 - TDD/TOOLING-STRATEGY.md — projectwijze code-quality keuzes
 
@@ -37,12 +38,12 @@ Wat je doet:
 
 Wat je expliciet NIET doet:
 
-- Geen sidebar replacement — die komt in een latere customization
-- Geen layout-chrome wijzigingen (header dropdowns, level-bar, sliding right
-  panel, breadcrumb, action bar) — komt in latere customization
-- Geen smart variant-aware ToC bouwen — komt in latere customization
-- Geen search uitbreiden met scope-filter — komt in latere customization
-- Geen eigen features uit features/ folder — die komen in fase 3
+- Geen section-sidebar — die komt in een latere customization (`02-template/02-section-sidebar`)
+- Geen layout-chrome wijzigingen (header dropdowns, level-header, tab-bar,
+  sliding right panel, breadcrumb, action bar) — komen in latere customizations
+- Geen smart-toc bouwen — komt in latere customization (`02-template/08-smart-toc`)
+- Geen search uitbreiden met scope-filter — komt in latere customization (`02-template/11-search`)
+- Geen eigen features uit `03-features/` folder — die komen in fase 3
 - Demo-content NIET vervangen — laat de template-content staan als
   test-suite voor markdown rendering, code blocks, prose, search en dark
   mode. Brand de strings die "Nuxt UI" of "Nuxt Docs Template" zeggen,

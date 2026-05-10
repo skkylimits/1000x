@@ -1,21 +1,21 @@
 # Contributing to 1000x
 
-> Hoe werk in dit project georganiseerd is en hoe PRs scope-bewust blijven. Voor _wat_ gebouwd wordt: zie `SPEC.md`. Voor de eenmalige project-setup: zie `SCAFFOLDING.md`.
+> Hoe werk in dit project georganiseerd is en hoe PRs scope-bewust blijven. Voor _wat_ gebouwd wordt: zie [`SPEC.md`](./SPEC.md) en [`FEATURES.md`](./FEATURES.md). Voor de eenmalige project-setup: zie [`01-foundation/SCAFFOLDING.md`](./01-foundation/SCAFFOLDING.md). Voor architectuur-discipline: zie [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 ## Drie soorten werk
 
-Het project bestaat uit drie soorten werk die naast elkaar leven en elk een eigen plek hebben in de documentatie. Wanneer een task binnenkomt, classificeer hem eerst — niet door elkaar halen, anders worden PRs onmogelijk te reviewen.
+Het project bestaat uit drie soorten werk in drie geordende stages. Wanneer een task binnenkomt, classificeer hem eerst — niet door elkaar halen, anders worden PRs onmogelijk te reviewen.
 
-**1. Foundation** — éénmalige setup vanuit de docs-template-baseline naar een gebrand 1000x-project: branding (rood, 1000x-logo), i18n (NL default, EN secondary), content-schema uitbreiden met 1000x-velden (`schemaVersion`, `scope`, `nav`, `variants`), AGENTS.md voor agent-context, ESLint + antfu, eerste deploy. Beschreven in `SCAFFOLDING.md`. Niet feature-bound.
+**1. Foundation** (`01-foundation/`) — éénmalige setup vanuit de docs-template-baseline naar een gebrand 1000x-project: branding (rood, 1000x-logo), i18n (NL default, EN secondary), content-schema uitbreiden met 1000x-velden (`schemaVersion`, `scope`, `nav`, `levels`, `tabs`, `icon`), AGENTS.md voor agent-context, ESLint + antfu, eerste deploy, plus content-stubs als integration-testbed. Beschreven in `01-foundation/SCAFFOLDING.md` en `01-foundation/FOUNDATION.md`. Niet feature-bound.
 
-**2. Template customizations** — werk waar de Nuxt UI docs-template iets levert dat afwijkt van wat onze spec voorschrijft: layout-chrome (header met dropdown-menu's, level-bar voor variant-tabs, sliding rechter-panel, breadcrumb, action bar), sidebar-replacement met scope-binding, smart variant-aware ToC, search met scope-filter. Beschreven per onderdeel in `template/`. Verwijst voor inhoudelijke eisen naar de feature-specs.
+**2. Template customizations** (`02-template/`) — werk waar de Nuxt UI docs-template of Nuxt Content iets levert dat afwijkt van wat onze spec voorschrijft. Dertien customizations: markdown-rendering, section-sidebar met `useNavTree`, header met dropdowns, levels (folder-based section-variants), tabs (file-based directory-tabs), page-chrome (breadcrumb + actiebalk), right-panel (skelet + switcher), smart-toc, changelog, prev-next, search met scope-filter, math/diagrammen, image-lightbox. Beschreven per onderdeel in `02-template/`. Iedere customization heeft één `SPEC.md`; grotere customizations hebben optioneel `steps/` sub-folders voor implementation-prompts.
 
-**3. Eigen features** — de 21 features uit de spec die de template niet levert: code-editor met execution, card trainer, AI-assistent, View/Edit-toggle, in-app content-management, comments, auth-gate, PWA, mobile, etc. Beschreven per feature in `features/<nummer>-<naam>/SPEC.md`, met implementatie-plannen in `features/<nummer>-<naam>/steps/<stap>/`.
+**3. Eigen features** (`03-features/`) — tien features die de template niet levert: edit-met-drafts, content-management, settings, code-editor met execution, card-trainer, comments, mobiele-layout, PWA, auth-gate, AI-assistent. Brengen vaak nieuwe libraries mee (CodeMirror, Pyodide, etc.) en eigen state-management (Pinia komt binnen bij feature 02 — zie `ARCHITECTURE.md`). Beschreven per feature in `03-features/<nummer>-<naam>/SPEC.md`, met implementation-plannen in `03-features/<nummer>-<naam>/steps/<stap>/`.
 
 ## Verhouding tot de spec
 
-De feature-specs in `SPEC.md` (sectie "Core Features") en in `features/` beschrijven _wat_ het systeem moet doen — engine-agnostisch, los van of het werk in categorie 1, 2 of 3 valt. Een feature kan deels via een customization geïmplementeerd zijn (bijvoorbeeld feature 2 sidebar via `template/SIDEBAR-REPLACEMENT.md`) en deels via een eigen feature-PR (bijvoorbeeld de plus-knoppen functioneel maken via feature 11). Dat is geen probleem zolang elk PR scope-bewust blijft.
+De feature- en customization-specs beschrijven _wat_ het systeem moet doen — engine-agnostisch. `SPEC.md` (in de root) is de overall productspec; `FEATURES.md` is de drie-stage roadmap-index met links naar elke individuele SPEC. Een functie kan deels via een customization geïmplementeerd zijn (bijvoorbeeld de scope-bound sidebar via `02-template/02-section-sidebar/`) en deels via een feature-PR (bijvoorbeeld de in-app content management plus-knoppen via `03-features/02-content-management/`). Dat is geen probleem zolang elk PR scope-bewust blijft.
 
 ## Volgorde
 
-Foundation → customizations → features. Een feature begint pas wanneer de bijbehorende customizations áf zijn — anders bouw je op een fundament dat onder je vandaan beweegt.
+Foundation → customizations → features. Een latere stage begint pas wanneer de eerdere áf is — anders bouw je op een fundament dat onder je vandaan beweegt. Binnen template-stage geldt outside-in: markdown-rendering → section-sidebar (geeft `useNavTree`) → header → levels → tabs → chrome → panel-inhoud → onderaan-pagina → extras. Zie `FEATURES.md` § Werk-volgorde principes en `02-template/README.md` § Volgorde voor de exacte ketting.

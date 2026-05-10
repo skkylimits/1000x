@@ -12,7 +12,7 @@
 
 ## Waarom content-stubs in foundation
 
-Foundation eindigt **niet** wanneer de template geclonet en gebrand is. Customizations in stage 2 (`02-template/`) hebben rijke content nodig om tegen te kunnen ontwikkelen — een sidebar zonder verschillende scopes, een ToC zonder nested headings, een variant-tabs-balk zonder variant-files: dat zijn allemaal testbed-gaten.
+Foundation eindigt **niet** wanneer de template geclonet en gebrand is. Customizations in stage 2 (`02-template/`) hebben rijke content nodig om tegen te kunnen ontwikkelen — een sidebar zonder verschillende scopes, een ToC zonder nested headings, een AppLevelHeader zonder level-folders, een TabBar zonder tabs-containers: dat zijn allemaal testbed-gaten.
 
 De Nuxt-content-template's eigen demo-content (`getting-started`, `essentials`, `ai`) blijft staan als coverage van baseline markdown-render-features (callouts, code, embeds, prose). Daar bovenop voegen we de 1000x-specifieke structuur toe (zie [`03-content-stubs/SPEC.md`](./03-content-stubs/SPEC.md)).
 

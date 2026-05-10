@@ -2,7 +2,7 @@
 
 ## Summary
 
-Drie leer-modes — Flashcards, Quiz en Exam — beschikbaar via de Cards-knop in de panel-switcher (zie Rechter panel met conditionele panel-switcher en smart ToC, feature 5). Bij keuze schuift een groot panel van links naar rechts in beeld over de docs-content. Voor lezers die actief willen oefenen op iedere docs-pagina.
+Drie leer-modes — Flashcards, Quiz en Exam — beschikbaar via de Cards-knop in de panel-switcher (zie Right panel en Smart ToC, customizations 07 en 08 in 02-template). Bij keuze schuift een groot panel van links naar rechts in beeld over de docs-content. Voor lezers die actief willen oefenen op iedere docs-pagina.
 
 ## Goals
 
@@ -18,7 +18,7 @@ Drie leer-modes — Flashcards, Quiz en Exam — beschikbaar via de Cards-knop i
 - Sluiten van het panel laat het naar links wegschuiven; de docs-content komt weer volledig in beeld
 - Cards worden in de eerste release gedefinieerd in de frontmatter van de pagina of in een aparte file naast de pagina
 - Iedere mode toont een progress-indicator en pass/fail-feedback per card of vraag
-- Op mobiel beslaat het panel het volledige scherm in plaats van 70% (zie Mobiele layout, feature 16)
-- Auto-generatie van cards uit de pagina-inhoud volgt in een latere fase en gebruikt de AI-laag (zie AI assistent in slide-panel, feature 19)
+- Op mobiel beslaat het panel het volledige scherm in plaats van 70% (zie Mobiele layout, feature 07 in 03-features)
+- Auto-generatie van cards uit de pagina-inhoud volgt in een latere fase en gebruikt de AI-laag (zie AI assistent in slide-panel, feature 10 in 03-features)
 - Het panel is volledig toetsenbord-bedienbaar (WCAG 2.1 AA): navigeren tussen cards, antwoorden, sluiten
 - De docs-content blijft achter het panel zichtbaar als context; het panel mag niet de URL veranderen zodat de lezer in dezelfde pagina-context blijft
