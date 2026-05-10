@@ -17,9 +17,9 @@ Iedere docs-pagina is een markdown-bestand met frontmatter dat server-side geren
 - Pagina-content wordt server-side gerenderd vanuit markdown-bestanden inclusief koppen H1 t/m H4 met anchor-links
 - Code-blocks worden gerenderd met syntax highlighting per taal
 - Callouts, afbeeldingen en embeds renderen inline binnen de prose-stijl
-- Content-tabs zijn ondersteund: meerdere tabs binnen één pagina, elk met eigen H2/H3-koppen die downstream door de smart ToC worden opgepikt (zie Rechter panel met smart ToC, feature 5)
+- Content-tabs zijn ondersteund: meerdere tabs binnen één pagina, elk met eigen H2/H3-koppen die downstream door de smart ToC worden opgepikt (zie Smart ToC, customization 08)
 - Bij meer content-tabs dan in beeld passen scrollt de tab-rij horizontaal via touch-swipe, trackpad-scroll en shift+scrollwheel; aan de rand toont een visuele hint dat er meer is
-- Het `+`-icoon voor een nieuwe tab uit In-app content management (feature 11) blijft tijdens horizontaal scrollen altijd zichtbaar en bedienbaar, ook via toetsenbord
+- Het `+`-icoon voor een nieuwe tab uit In-app content management (feature 02 in 03-features) blijft tijdens horizontaal scrollen altijd zichtbaar en bedienbaar, ook via toetsenbord
 - Anchor-links naar koppen werken binnen de actief geselecteerde tab; nooit naar een verborgen kop in een inactieve tab
 - Iedere pagina kent een impliciete `schemaVersion` (default 1); onbekende frontmatter-velden geven een dev-warning maar laten de pagina renderen
 - Migration-scripts kunnen frontmatter ophogen naar een nieuwe schemaVersion zonder pagina's handmatig aan te passen

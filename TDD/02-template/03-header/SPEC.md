@@ -20,7 +20,7 @@ Deze customization vervangt de baseline-template-header door de definitieve 1000
 - Een hoofdmenu-item met meerdere children opent een dropdown op hover én klik; een chevron-indicator signaleert die dropdown
 - Een hoofdmenu-item met geen of slechts één directe child rendert als directe link zonder dropdown en zonder chevron; navigatie gaat naar de scope-overview
 - Sub-items in elk dropdown worden data-driven afgeleid uit de content-tree (zie Section sidebar, customization 02), inclusief icon en korte description per child uit frontmatter
-- Rechterkant bevat vijf icon-only actie-knoppen in deze functionele rollen: command palette voor search (zie Search, customization 09), AI-assistent (zie AI assistent, feature 10 in 03-features), taalwissel (zie i18n, customization 02 in 01-foundation), light/dark-toggle, settings (zie Settings, feature 03 in 03-features)
+- Rechterkant bevat vijf icon-only actie-knoppen in deze functionele rollen: command palette voor search (zie Search, customization 11), AI-assistent (zie AI assistent, feature 10 in 03-features), taalwissel (zie i18n, customization 02 in 01-foundation), light/dark-toggle, settings (zie Settings, feature 03 in 03-features)
 - Geen tekst-labels naast de icon-only knoppen; toetsenbord-affordances zoals `Cmd+K` mogen alleen in tooltip of binnenin de geopende command palette verschijnen, niet in de header zelf
 - De divider onder de header loopt edge-to-edge over de outer container, zonder inset of whitespace aan de zijkanten
 - De active-state-underline van een geselecteerd hoofdmenu-item landt op die divider in plaats van zwevend erboven

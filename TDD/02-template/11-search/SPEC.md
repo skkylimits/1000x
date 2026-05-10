@@ -27,7 +27,7 @@ Command palette via `Cmd/Ctrl+K` of het search-icoon in de header (zie Header, c
 ### Scope-toggle (de customization-laag)
 
 - De command palette krijgt een extra toggle die schakelt tussen scope **"huidige sectie"** en scope **"alles"**
-- "Huidige sectie" gebruikt de actieve sidebar-scope uit Section sidebar (customization 02) om de zoekruimte te beperken
+- "Huidige sectie" gebruikt de actieve sidebar-scope uit Section sidebar (customization 04) om de zoekruimte te beperken
 - "Alles" zoekt over de hele site, identiek aan het standaard-gedrag
 - De toggle is bedienbaar via klik én via toetsenbord, zonder de palette te sluiten
 - De laatst-gekozen scope is de default bij hernieuwd openen (zie Settings, feature 03 in 03-features)

@@ -225,6 +225,7 @@ Toevoegen wanneer iemand er voor het eerst tegenaan loopt — niet preemptive.
 
 ## Anti-patterns — concrete dingen die we niet doen
 
+- **`.navigation.yml` files** voor directory-metadata — wij gebruiken uitsluitend `index.md` frontmatter. Reden: single source per directory (één file ipv twee), zelfde mental model als page-frontmatter, AI/CMS-friendly (één file per directory om te lezen of bewerken), geen drift tussen yml-config en md-content. Schaalbaarheid: als features 02 en 03 (in `03-features/`) content-mutaties en settings raken, interacteren ze altijd met dezelfde file. Met `.navigation.yml` zou elke nav-veld-toevoeging een keuze worden ("hoort dit in yml of frontmatter?") en zou refactoring twee files synchroon moeten houden
 - **`queryCollection` in een page-component** voor een snelle lookup — gebruik `useNavTree`
 - **`localStorage.setItem('ui:foo', ...)` in een composable** — gebruik `settingsStore.set('foo', ...)`
 - **Twee composables die hetzelfde domein bedienen** (`useNav` naast `useNavTree`) — één moet weg

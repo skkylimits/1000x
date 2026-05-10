@@ -16,16 +16,61 @@ Een customization is geen feature in de engere zin, maar architectonisch zwaar g
 
 ## Volgorde
 
-De definitieve volgorde-revisit komt apart aan bod (afhankelijkheden tussen customizations + content-stub-prep in foundation). Voorlopige volgorde-discipline:
+Dertien customizations, gegroepeerd per laag. Elke laag bouwt op de vorige.
 
-- **`01-markdown-rendering` eerst** — content-rendering is het fundament. Sidebar/ToC/changelog hebben rijke content nodig om getest te kunnen worden
-- **`02-section-sidebar` daarna** — levert de tree-bron die alle nav-surfaces voedt (header-dropdowns, prev/next, smart ToC, breadcrumb)
-- **`03-header`, `04-variant-tabs`, `05-page-chrome`** — chrome-lagen, parallelliseerbaar zodra `02` staat
-- **`06-content-tabs` vóór `07-rechter-panel-en-toc`** — de smart ToC is tab-bewust, dus content-tabs moeten eerder bestaan
-- **`07-rechter-panel-en-toc`** vereist `05` (rechter-panel-skelet) + `06` (content-tabs)
-- **`08-changelog-en-prev-next`** — onafhankelijk zodra de tree-bron uit `02` staat
-- **`09-search`** — geïsoleerd, kan op elk moment
-- **`10-math-en-diagrammen`, `11-image-lightbox`** — markdown-rendering enhancements, hangen van `01-markdown-rendering` af
+**Laag A — Markdown content (geen chrome aangeraakt)**
+
+| # | Customization | Hangt af van |
+|---|---|---|
+| 01 | [markdown-rendering](./01-markdown-rendering/SPEC.md) — base prose + MDC inline `::tabs` voor kleine alternatives | — |
+
+**Laag B — Tree-bron én visible sidebar**
+
+| # | Customization | Hangt af van |
+|---|---|---|
+| 02 | [section-sidebar](./02-section-sidebar/SPEC.md) — `useNavTree()` + scope-walk + kind-detection (page/chapter/levels-container/tabs-container/level/tab) + index-hoist + levels-effective-scope + tabs-container-leaf rendering | 01 |
+
+Section-sidebar Step 1 (`buildTree` + `useNavTree`) is de data-foundation die alle latere customizations consumeren. Step 2 maakt de sidebar visueel. Step 3 polish (persistence + keyboard + a11y).
+
+**Laag C — Chrome consumers van de tree**
+
+| # | Customization | Hangt af van |
+|---|---|---|
+| 03 | [header](./03-header/SPEC.md) — zes module-dropdowns + vijf icon-only actie-knoppen | 02 |
+| 04 | [levels](./04-levels/SPEC.md) — AppLevelHeader chrome-sub-header voor secties met `levels: true` (folder-based) | 02 |
+| 05 | [tabs](./05-tabs/SPEC.md) — TabBar in-content onder H1 voor directories met `tabs: true` (file-based siblings) | 02 |
+
+`03/04/05` parallel mogelijk zodra `02` staat. Allemaal consumeren `useNavTree`.
+
+**Laag D — Page-niveau chrome**
+
+| # | Customization | Hangt af van |
+|---|---|---|
+| 06 | [page-chrome](./06-page-chrome/SPEC.md) — breadcrumb + actiebalk inline naast H1 | 02 |
+| 07 | [right-panel](./07-right-panel/SPEC.md) — drie-kolom skelet + resize + open/close + switcher buttons | 02 |
+
+**Laag E — Inhoud van het rechter-panel**
+
+| # | Customization | Hangt af van |
+|---|---|---|
+| 08 | [smart-toc](./08-smart-toc/SPEC.md) — scroll-driven, auto-fit ToC (tab/level-awareness via routing) | 07 |
+
+**Laag F — Onderaan-pagina**
+
+| # | Customization | Hangt af van |
+|---|---|---|
+| 09 | [changelog](./09-changelog/SPEC.md) — commit-timeline van git | 02 |
+| 10 | [prev-next](./10-prev-next/SPEC.md) — scope-bound wrapper rond `queryCollectionItemSurroundings` (level-awareness komt gratis via URL-nesting) | 02 |
+
+Splitsing van changelog en prev-next omdat ze technisch heel verschillend zijn (git-introspect vs. nav-walk).
+
+**Laag G — Extras**
+
+| # | Customization | Hangt af van |
+|---|---|---|
+| 11 | [search](./11-search/SPEC.md) — scope-toggle bovenop OOTB full-text search | 02 |
+| 12 | [math-en-diagrammen](./12-math-en-diagrammen/SPEC.md) — KaTeX (formules) + Mermaid (diagrammen), opt-in per page | 01 |
+| 13 | [image-lightbox](./13-image-lightbox/SPEC.md) — klik op afbeelding → fullscreen overlay met alt als caption | 01 |
 
 ## Format per customization
 
