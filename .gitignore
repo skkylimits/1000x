@@ -1,0 +1,35 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# VSC
+.history
+
+# Claude Code local settings (per-user permission allow-lists)
+.claude/settings.local.json
+
+# Test artifacts
+test-results/
+playwright-report/
+playwright/.cache/
