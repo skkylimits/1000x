@@ -24,6 +24,7 @@ export default defineAppConfig({
 		},
 		search: true,
 		colorMode: true,
+		maxMenuItems: 6,
 		links: [] as Array<{ 'icon': string, 'to': string, 'target'?: string, 'aria-label'?: string }>,
 	},
 	footer: {

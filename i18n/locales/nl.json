@@ -4,7 +4,10 @@
 		"loading": "Laden..."
 	},
 	"header": {
-		"localeToggle": "Wissel taal"
+		"localeToggle": "Wissel taal",
+		"aiAssistant": "AI assistent",
+		"settings": "Instellingen",
+		"comingSoon": "Binnenkort"
 	},
 	"toc": {
 		"title": "Op deze pagina"

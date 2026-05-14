@@ -4,7 +4,10 @@
 		"loading": "Loading..."
 	},
 	"header": {
-		"localeToggle": "Switch language"
+		"localeToggle": "Switch language",
+		"aiAssistant": "AI assistant",
+		"settings": "Settings",
+		"comingSoon": "Coming soon"
 	},
 	"toc": {
 		"title": "On this page"

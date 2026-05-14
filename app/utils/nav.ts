@@ -211,7 +211,17 @@ export function buildTree(pages: ContentPageLike[], _overlay?: NavOverlay): NavT
 	for (const node of lookup.values())
 		orderResolver(node, dirEntries.get(node.path), allEntries)
 
-	roots.sort((a, b) => a.title.localeCompare(b.title))
+	roots.sort((a, b) => {
+		const ao = allEntries.get(a.path)?.order
+		const bo = allEntries.get(b.path)?.order
+		if (ao !== undefined && bo !== undefined)
+			return ao - bo
+		if (ao !== undefined)
+			return -1
+		if (bo !== undefined)
+			return 1
+		return a.title.localeCompare(b.title)
+	})
 
 	return { roots, lookup }
 }

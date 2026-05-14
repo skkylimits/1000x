@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { ContentNavigationItem } from '@nuxt/content'
+import { buildHeaderMenuItems } from '~/utils/header-menu'
 
-const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
+const tree = await useNavTree()
+const route = useRoute()
 
 const { header } = useAppConfig()
 const { t, locale, locales, setLocale } = useI18n()
@@ -14,17 +15,35 @@ const localeItems = computed(() =>
 		onSelect: () => setLocale(l.code as never),
 	})),
 )
+
+const menuItems = computed(() =>
+	buildHeaderMenuItems(tree.value?.roots ?? [], {
+		maxItems: header.maxMenuItems ?? 6,
+		currentPath: route.path,
+	}),
+)
 </script>
 
 <template>
 	<UHeader
-		:ui="{ center: 'flex-1' }"
 		:to="header?.to || '/'"
+		:ui="{
+			center: 'flex-1 h-full',
+		}"
 	>
-		<UContentSearchButton
-			v-if="header?.search"
-			:collapsed="false"
-			class="w-full"
+		<UNavigationMenu
+			orientation="horizontal"
+			variant="link"
+			content-orientation="vertical"
+			:items="menuItems"
+			:ui="{
+				root: 'h-full',
+				list: 'h-full',
+				item: 'h-full py-0',
+				link: 'h-full flex items-center relative before:hidden',
+				childLinkDescription: 'line-clamp-2',
+			}"
+			class="justify-center h-full"
 		/>
 
 		<template
@@ -54,10 +73,17 @@ const localeItems = computed(() =>
 		</template>
 
 		<template #right>
-			<UContentSearchButton
-				v-if="header?.search"
-				class="lg:hidden"
-			/>
+			<UContentSearchButton v-if="header?.search" />
+
+			<UTooltip :text="t('header.comingSoon')">
+				<UButton
+					color="neutral"
+					variant="ghost"
+					icon="i-lucide-bot"
+					disabled
+					:aria-label="t('header.aiAssistant')"
+				/>
+			</UTooltip>
 
 			<UDropdownMenu :items="localeItems">
 				<UButton
@@ -70,20 +96,25 @@ const localeItems = computed(() =>
 
 			<UColorModeButton v-if="header?.colorMode" />
 
-			<template v-if="header?.links">
+			<UTooltip :text="t('header.comingSoon')">
 				<UButton
-					v-for="(link, index) of header.links"
-					:key="index"
-					v-bind="{ color: 'neutral', variant: 'ghost', ...link }"
+					color="neutral"
+					variant="ghost"
+					icon="i-lucide-settings"
+					disabled
+					:aria-label="t('header.settings')"
 				/>
-			</template>
-		</template>
-
-		<template #body>
-			<UContentNavigation
-				highlight
-				:navigation="navigation"
-			/>
+			</UTooltip>
 		</template>
 	</UHeader>
 </template>
+
+<style scoped>
+/* Reka UI inserts a position:relative wrapper between <nav> and <ul> that has no
+   height — it breaks the h-full chain so the active link doesn't reach the
+   header's bottom border. Stretch the wrapper so link.bottom === header.bottom
+   and the Tailwind after-pseudo lands precisely on the divider. */
+:deep([data-reka-navigation-menu] > div[style*='position:relative']) {
+	height: 100%;
+}
+</style>

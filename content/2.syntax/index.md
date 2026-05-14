@@ -3,6 +3,7 @@ title: Syntax
 description: Programmeertalen en lower-level constructen — JavaScript, Git, en meer.
 icon: lucide:code
 scope: self
+order: 2
 nav: [javascript, git]
 ---
 
