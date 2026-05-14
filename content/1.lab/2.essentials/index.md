@@ -2,7 +2,6 @@
 title: Essentials
 description: Markdown-rendering coverage — text, code, prose en embeds.
 icon: lucide:book-open
-scope: self
 nav: [markdown-syntax, code-blocks, prose-components, images-embeds]
 ---
 

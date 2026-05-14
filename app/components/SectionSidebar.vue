@@ -46,7 +46,7 @@ function visibleChildren(node: NavNode): NavNode[] {
 	>
 		<div
 			v-if="scope"
-			class="flex items-center gap-2 pb-3 pl-3 text-(--ui-text-highlighted) font-semibold"
+			class="flex items-center gap-2 pb-3 -ml-0.5 pl-0.5 text-(--ui-text-highlighted) font-semibold"
 		>
 			<UIcon
 				v-if="scope.icon"
@@ -65,7 +65,7 @@ function visibleChildren(node: NavNode): NavNode[] {
 					<button
 						type="button"
 						:aria-expanded="isExpanded(node.path)"
-						class="flex w-full items-center gap-2 rounded-md py-1.5 pl-3 pr-2 text-left text-(--ui-text-muted) hover:text-(--ui-text)"
+						class="flex w-full items-center gap-2 rounded-md py-1.5 -ml-0.5 pl-0.5 pr-2 text-left text-(--ui-text-muted) hover:text-(--ui-text)"
 						@click="toggle(node.path)"
 					>
 						<UIcon

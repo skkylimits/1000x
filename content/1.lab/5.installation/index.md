@@ -2,7 +2,6 @@
 title: Installation
 description: Drie manieren om 1000x lokaal te installeren.
 icon: lucide:download
-scope: self
 tabs: true
 nav: [vite, postcss, cli]
 ---
