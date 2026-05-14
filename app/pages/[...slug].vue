@@ -58,7 +58,6 @@ const links = computed(() => {
 		<UPageHeader
 			:title="page.title"
 			:description="page.description"
-			:headline="headline"
 		>
 			<template #links>
 				<UButton

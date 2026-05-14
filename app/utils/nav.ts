@@ -217,10 +217,11 @@ export function buildTree(pages: ContentPageLike[], _overlay?: NavOverlay): NavT
 }
 
 export function walkScope(routePath: string, lookup: Map<string, NavNode>): NavNode | null {
-	if (!lookup.has(routePath))
+	const current = lookup.get(routePath)
+	if (!current)
 		return null
 
-	const ancestors: NavNode[] = []
+	const chain: NavNode[] = [current]
 	let p = routePath
 	while (true) {
 		const idx = p.lastIndexOf('/')
@@ -229,18 +230,15 @@ export function walkScope(routePath: string, lookup: Map<string, NavNode>): NavN
 		p = p.substring(0, idx)
 		const node = lookup.get(p)
 		if (node)
-			ancestors.push(node)
+			chain.push(node)
 	}
 
-	for (const a of ancestors) {
+	for (const a of chain) {
 		if (a.scope === 'self' || a.scope === 'children')
 			return a
 	}
 
-	if (ancestors.length > 0)
-		return ancestors[ancestors.length - 1]!
-
-	return lookup.get(routePath) ?? null
+	return chain[chain.length - 1]!
 }
 
 export function walkEffectiveScope(routePath: string, lookup: Map<string, NavNode>): NavNode | null {
