@@ -4,6 +4,7 @@ description: Experimenten, projecten en sandboxes — een speeltuin zonder vaste
 icon: lucide:flask-conical
 scope: self
 order: 1
+headerLink: true
 ---
 
 # The Lab

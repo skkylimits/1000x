@@ -26,14 +26,20 @@ function mapRoot(root: NavNode, currentPath: string): NavigationMenuItem {
 	// tabs-container nodes. Those kinds matter for sidebar/level-header rendering but
 	// not for the top-level menu: at the menu level, a levels-container is just a
 	// navigable topic landing page.
+	//
+	// Exception: when the root sets `headerLink: true` in its index.md frontmatter, force
+	// a direct link regardless of children. Used for modules whose subfolders are internal
+	// structure (rendered by the section sidebar at /<root>/...) rather than separate
+	// top-level menu items.
 	const children = root.children
 	const active = isActive(root.path, currentPath)
+	const forceLink = root.headerLink === true
 
 	const item: NavigationMenuItem = {
 		label: root.title,
 		icon: root.icon,
 	}
-	if (children.length >= 2)
+	if (children.length >= 2 && !forceLink)
 		item.children = children.map(mapChild)
 	else
 		item.to = root.path
@@ -41,10 +47,11 @@ function mapRoot(root: NavNode, currentPath: string): NavigationMenuItem {
 		item.description = root.description
 	if (active) {
 		item.active = true
-		// Active-state underline: 2px bar that lands on the header's bottom divider.
-		// Anchored via the Reka UI wrapper-h-full fix in AppHeader.vue's scoped style;
-		// without that fix the link's intrinsic height < header height would leave whitespace.
-		item.class = 'after:absolute after:left-2.5 after:right-2.5 after:-bottom-[16px] after:h-0.5 after:bg-primary after:content-[\'\']'
+		// Active-state underline: 2px bar at the bottom of the header divider.
+		// Marker class `app-header-active` lets e2e tests locate the active link;
+		// utility classes paint the bar. The -16px offset compensates for the gap between
+		// the (vertically centered) link's bottom and the header's bottom border.
+		item.class = 'app-header-active after:absolute after:left-2.5 after:right-2.5 after:-bottom-[16px] after:h-0.5 after:bg-primary after:content-[\'\']'
 	}
 	return item
 }

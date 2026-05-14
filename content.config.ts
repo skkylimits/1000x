@@ -29,6 +29,12 @@ export const contentSchema = z.object({
 	levels: z.union([z.boolean(), z.array(z.string())]).optional(),
 	tabs: z.union([z.boolean(), z.array(z.string())]).optional(),
 
+	// Header customization: when true, force this root to render as a direct
+	// link in the main header menu (no dropdown), even when it has children.
+	// Used for modules whose subfolders are internal structure (sidebar territory)
+	// rather than separate top-level menu items. See 02-TEMPLATE/03-header.
+	headerLink: z.boolean().optional(),
+
 	// Forward-compat: every page is implicitly schemaVersion 1 unless
 	// explicitly bumped. Migrators land at the first breaking change.
 	schemaVersion: z.number().default(1),

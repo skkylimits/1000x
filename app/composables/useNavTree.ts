@@ -9,6 +9,7 @@ interface RawDocPage {
 	description?: string
 	icon?: string
 	scope?: 'self' | 'children'
+	headerLink?: boolean
 	nav?: string[]
 	order?: number
 	levels?: boolean | string[]
@@ -36,6 +37,7 @@ function toContentPageLike(p: RawDocPage): ContentPageLike {
 		description: nullToUndef(p.description),
 		icon: nullToUndef(p.icon),
 		scope: nullToUndef(p.scope),
+		headerLink: nullToUndef(p.headerLink),
 		nav: nullToUndef(p.nav),
 		order: nullToUndef(p.order),
 		levels: nullToUndef(p.levels),

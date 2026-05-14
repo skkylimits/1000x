@@ -7,6 +7,7 @@ function node(p: {
 	title?: string
 	icon?: string
 	description?: string
+	headerLink?: boolean
 	children?: NavNode[]
 	kind?: NavNode['meta']['kind']
 }): NavNode {
@@ -16,6 +17,7 @@ function node(p: {
 		title: p.title ?? p.path,
 		icon: p.icon,
 		description: p.description,
+		headerLink: p.headerLink,
 		children: p.children ?? [],
 		meta: {
 			kind: p.kind ?? 'chapter',
@@ -127,6 +129,41 @@ describe('buildHeaderMenuItems — surfaces all children (no kind-filtering)', (
 		const [item] = buildHeaderMenuItems([root], { maxItems: 6, currentPath: '/' })
 		expect(item.children).toHaveLength(3)
 		expect(item.children?.map(c => c.label)).toEqual(['a', 'b', 'c'])
+	})
+})
+
+describe('buildHeaderMenuItems — headerLink frontmatter override', () => {
+	it('renders as direct link when root has headerLink: true, even with multiple children', () => {
+		const root = node({
+			path: '/lab',
+			title: 'The Lab',
+			icon: 'i-lucide-flask-conical',
+			headerLink: true,
+			children: [
+				node({ path: '/lab/getting-started', title: 'Getting Started', icon: 'x' }),
+				node({ path: '/lab/essentials', title: 'Essentials', icon: 'x' }),
+				node({ path: '/lab/ai', title: 'AI', icon: 'x' }),
+				node({ path: '/lab/installation', title: 'Installation', icon: 'x' }),
+			],
+		})
+		const [item] = buildHeaderMenuItems([root], { maxItems: 6, currentPath: '/' })
+		expect(item.to).toBe('/lab')
+		expect(item.children).toBeUndefined()
+	})
+
+	it('still renders as dropdown when headerLink is undefined or false (default behavior)', () => {
+		const root = node({
+			path: '/syntax',
+			title: 'Syntax',
+			icon: 'x',
+			children: [
+				node({ path: '/syntax/git', title: 'Git', icon: 'x' }),
+				node({ path: '/syntax/python', title: 'Python', icon: 'x' }),
+			],
+		})
+		const [item] = buildHeaderMenuItems([root], { maxItems: 6, currentPath: '/' })
+		expect(item.children).toHaveLength(2)
+		expect(item.to).toBeUndefined()
 	})
 })
 

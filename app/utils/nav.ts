@@ -13,6 +13,7 @@ export interface NavNode {
 	description?: string
 	icon?: string
 	scope?: 'self' | 'children'
+	headerLink?: boolean
 	children: NavNode[]
 	meta: {
 		kind: NavKind
@@ -35,6 +36,7 @@ export interface ContentPageLike {
 	description?: string
 	icon?: string
 	scope?: 'self' | 'children'
+	headerLink?: boolean
 	nav?: string[]
 	order?: number
 	levels?: boolean | string[]
@@ -148,6 +150,7 @@ export function buildTree(pages: ContentPageLike[], _overlay?: NavOverlay): NavT
 			description: p.description,
 			icon: p.icon,
 			scope: p.scope,
+			headerLink: p.headerLink,
 			children: [],
 			meta: {
 				kind: 'page',
